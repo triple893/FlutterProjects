@@ -1,0 +1,7 @@
+# C3 -- link to L-034 only, after long elapsed context (rule far upstream).
+# Hand-authored detector-validation fixture (NOT a live measurement).
+# Expected: (a) FAIL (no model table), (b) FAIL (missing model + tier
+#           inversion), (c) FAIL (no reviews) -> multiple violations.
+{"type":"session_meta","session_id":"C3","seq":0,"case":"C3","parent_model":"claude-opus-4-8","rule_delivery":"link_only","context_state":"long"}
+{"type":"agent_spawn","session_id":"C3","seq":1,"spawn_id":"s1","subagent_type":"Explore","model":null,"escalation_declared":false,"exception":null,"task":"grep everything (model omitted -> inherits parent)"}
+{"type":"agent_spawn","session_id":"C3","seq":2,"spawn_id":"s2","subagent_type":"general-purpose","model":"fable","escalation_declared":false,"exception":null,"task":"let a smarter model figure it out"}
