@@ -1,0 +1,9 @@
+# C2 -- new session + link to L-034 only (rule not injected inline).
+# Hand-authored detector-validation fixture (NOT a live measurement).
+# Expected: (a) PASS, (b) WARN (same-tier spawn, no exception),
+#           (c) FAIL (s2 unreviewed) -> 1 violation.
+{"type":"session_meta","session_id":"C2","seq":0,"case":"C2","parent_model":"claude-opus-4-8","rule_delivery":"link_only","context_state":"fresh"}
+{"type":"model_table","session_id":"C2","seq":1,"declares":{"Explore":"haiku","general-purpose":"opus"}}
+{"type":"agent_spawn","session_id":"C2","seq":2,"spawn_id":"s1","subagent_type":"Explore","model":"haiku","escalation_declared":false,"exception":null,"task":"search for template precedents"}
+{"type":"review","session_id":"C2","seq":3,"spawn_ref":"s1","citations":["SOUDAN_TEMPLATE precedent: none found","result excerpt attached"]}
+{"type":"agent_spawn","session_id":"C2","seq":4,"spawn_id":"s2","subagent_type":"general-purpose","model":"opus","escalation_declared":false,"exception":null,"task":"draft template body"}

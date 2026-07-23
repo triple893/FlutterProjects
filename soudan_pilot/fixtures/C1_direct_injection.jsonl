@@ -1,0 +1,9 @@
+# C1 -- new session + L-034 body injected directly into context.
+# Hand-authored detector-validation fixture (NOT a live measurement).
+# Expected: (a) PASS, (b) PASS, (c) PASS, 0 violations.
+{"type":"session_meta","session_id":"C1","seq":0,"case":"C1","parent_model":"claude-opus-4-8","rule_delivery":"direct_injection","context_state":"fresh"}
+{"type":"model_table","session_id":"C1","seq":1,"declares":{"Explore":"haiku","general-purpose":"sonnet"}}
+{"type":"agent_spawn","session_id":"C1","seq":2,"spawn_id":"s1","subagent_type":"Explore","model":"haiku","escalation_declared":false,"exception":null,"task":"fan-out search of ledger references"}
+{"type":"review","session_id":"C1","seq":3,"spawn_ref":"s1","citations":["DISPATCH_LEDGER.md:L-025 row","result excerpt: 3 references found"]}
+{"type":"agent_spawn","session_id":"C1","seq":4,"spawn_id":"s2","subagent_type":"general-purpose","model":"sonnet","escalation_declared":false,"exception":null,"task":"normalise fixture set"}
+{"type":"review","session_id":"C1","seq":5,"spawn_ref":"s2","citations":["fixtures/*.jsonl line counts","diff: 0 unexpected changes"]}

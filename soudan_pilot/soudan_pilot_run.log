@@ -1,0 +1,53 @@
+### 2026-07-23T11:29:30Z SOUDAN gate pilot run (意思決定支援室 §6)
+
+$ python3 -m unittest test_soudan_gate
+----------------------------------------------------------------------
+Ran 12 tests in 0.001s
+
+OK
+
+$ python3 run_soudan_pilot.py ; echo exit=$?
+SOUDAN gate pilot -- findings
+
+[S1_complete_ok]
+  none (all gates pass)
+
+[S2_incomplete]
+  - VIOLATION (B) V_B_SECTION_MISSING: required body section 6 missing or empty
+
+[S3_coi_kuro]
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: prepared_by=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: committed_by=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: for_decider=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+
+[citing_related_ok]
+  none (all gates pass)
+
+[citing_authority_bad]
+  - VIOLATION (D) V_D_SOUDAN_AS_AUTHORITY: S-20260723-01 cited in `authority:` field (only `related:` is allowed)
+  - VIOLATION (D) V_D_SOUDAN_AS_BASIS: S-20260723-01 used as 根拠 in body (only `related:` provenance is allowed)
+
+detection-firing self-check:
+  S1_complete_ok: expect CLEAN -> 0 violation(s) -> OK
+  S2_incomplete: expect FIRE (completeness) -> 1 violation(s) -> OK (fired)
+  S3_coi_kuro: expect FIRE (conflict-of-interest) -> 3 violation(s) -> OK (fired)
+  citing_related_ok: expect CLEAN -> 0 violation(s) -> OK
+  citing_authority_bad: expect FIRE (authority) -> 2 violation(s) -> OK (fired)
+
+self-check: PASS
+run exit=0
+
+$ python3 detect_soudan_gate.py soudan_fixtures/S3_coi_kuro.md --citing soudan_fixtures/citing_authority_bad.md ; echo exit=$?
+
+=== soudan_fixtures/S3_coi_kuro.md ===
+  soudan_id: S-20260723-03
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: prepared_by=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: committed_by=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+  - VIOLATION (C) V_C_CONFLICT_OF_INTEREST: for_decider=kuro equals subject=kuro (self-adjudication forbidden; route to a different AI)
+
+=== soudan_fixtures/citing_authority_bad.md ===
+  - VIOLATION (D) V_D_SOUDAN_AS_AUTHORITY: S-20260723-01 cited in `authority:` field (only `related:` is allowed)
+  - VIOLATION (D) V_D_SOUDAN_AS_BASIS: S-20260723-01 used as 根拠 in body (only `related:` provenance is allowed)
+
+TOTAL VIOLATIONS: 5 across 2 document(s)
+detector exit=1
