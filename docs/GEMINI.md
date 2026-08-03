@@ -3,7 +3,7 @@
 ## AI向けコア・ディレクティブ・サマリー
 
 - **プロジェクトビジョン:** 「AIと共に、アイデアを即座に形に。AndroidとiOS、両方の世界で輝く、革新的なモバイルアプリケーションを創造する。」
-- **現在の最優先事項:** 「GitHub Codespacesを用いた、Flutter開発環境の完全自動構築基盤の確立。」
+- **現在の最優先事項:** 「フェーズ2 ― ファイルサーバーアプリのプロトタイピング着手。」（フェーズ1の開発基盤確立は完了）
 - **AI行動指針の要約:** 「ビジョンを最優先し、PROGRESS.mdに従い、ユーザーに説明してから実装する。」
 - **主要な開発ルール:** 「クラウド開発環境（GitHub Codespaces）を主軸とし、`.devcontainer.json`による環境のコード化を徹底する。開発中のアプリはWeb版でプレビューし、迅速なイテレーションを実現する。」
 - **直近の主要な決定:** 「クロスプラットフォーム開発の効率性を重視し、Flutterを主要技術として採用。開発基盤としてGitHub Codespacesを利用することを決定。」
@@ -30,10 +30,12 @@
 ## 3. 開発ロードマップ（初期案）
 
 - **フェーズ1: 開発基盤の確立**
-    - [ ] `FlutterProject` の基本的なフォルダ構造とドキュメントを作成する。
-    - [ ] `.devcontainer` フォルダと、Flutter環境を定義した `devcontainer.json` を作成する。
-    - [ ] GitHub上でリポジトリを作成し、Codespacesを起動して、環境が自動構築されることを確認する。
-    - [ ] Flutterの初期サンプルアプリ（カウンターアプリ）を生成し、Webプレビューで表示できることを確認する。
+    - [x] `FlutterProject` の基本的なフォルダ構造とドキュメントを作成する。
+    - [x] `.devcontainer` フォルダと、Flutter環境を定義した `devcontainer.json` を作成する。
+    - [x] GitHub上でリポジトリを作成する。
+    - [ ] Codespacesを起動して、環境が自動構築されることを確認する。（設定は更新済み、実機での起動確認は未実施）
+    - [x] Flutterの初期サンプルアプリ（カウンターアプリ）を生成し、Webビルドが成功することを確認する。
+    - [x] GitHub Actions による CI（解析・テスト・Webビルド）を整備する。
 
 - **フェーズ2: ファイルサーバーアプリのプロトタイピング**
     - [ ] ファイルサーバーへのAPIリクエストを行うネットワーク処理を実装する。
@@ -47,9 +49,17 @@
     - [ ] パフォーマンスの最適化と、各OSに合わせたUIの調整。
 
 ## 4. 主要ファイルパス
-- `F:\GeminiCLI\FlutterProject\docs\GEMINI.md`: このファイル
-- `F:\GeminiCLI\FlutterProject\docs\PROGRESS.md`: 詳細な進捗管理
-- `F:\GeminiCLI\FlutterProject\docs\DECISION_LOG.md`: プロジェクト意思決定ログ
-- `F:\GeminiCLI\FlutterProject\docs\README.md`: プロジェクトの概要と使い方
-- `F:\GeminiCLI\FlutterProject\docs\PROJECT_STATUS_REPORT.md`: プロジェクトのステータスレポート
-- `F:\GeminiCLI\FlutterProject\.devcontainer\devcontainer.json`: 開発環境の設計図
+
+パスはすべてリポジトリルートからの相対パスです。開発はGitHub Codespaces上で行うため、ローカルPC固有のパスは使用しません。
+
+- `docs/GEMINI.md`: このファイル
+- `docs/PROGRESS.md`: 詳細な進捗管理
+- `docs/DECISION_LOG.md`: プロジェクト意思決定ログ
+- `docs/README.md`: プロジェクトの概要と使い方
+- `docs/PROJECT_STATUS_REPORT.md`: プロジェクトのステータスレポート
+- `README.md`: リポジトリのトップページ（技術スタック・開発コマンド）
+- `.devcontainer/devcontainer.json`: 開発環境の設計図
+- `.github/workflows/ci.yml`: CI（解析・テスト・Webビルド）の定義
+- `lib/main.dart`: アプリケーションのエントリポイント
+- `test/widget_test.dart`: ウィジェットテスト
+- `pubspec.yaml`: 依存パッケージとアプリのメタデータ
