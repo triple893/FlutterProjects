@@ -40,7 +40,27 @@ flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
 
 # Webのリリースビルド
 flutter build web --release
+
+# Android APK のビルド（出力先: build/app/outputs/flutter-apk/app-release.apk）
+flutter build apk --release
 ```
+
+## スマホ（Android）で試す
+
+PCやFlutter SDKは不要です。CIが自動でビルドしたAPKを、スマホから直接ダウンロードしてインストールできます。
+
+**ダウンロード先:** https://github.com/triple893/FlutterProjects/releases/latest
+
+1. スマホのブラウザで上のページを開き、`app-release.apk` をタップ
+2. ダウンロードしたファイルを開く
+3. 「提供元不明のアプリ」の許可を求められたら許可する（初回のみ）
+
+`main` ブランチが更新されるたびに、このAPKは自動で最新版に差し替わります。
+
+> **注意**
+> - APKはデバッグ用の鍵で署名されているため、Google Playでの配布はできません。手元の端末で動作確認するためのものです。
+> - 本リポジトリは公開設定のため、このAPKは誰でもダウンロードできます。
+> - プルリクエスト上のビルドはReleaseには公開されません。該当のActions実行ページから、artifact（zip形式・GitHubへのログインが必要）として取得してください。
 
 ## ディレクトリ構成
 
