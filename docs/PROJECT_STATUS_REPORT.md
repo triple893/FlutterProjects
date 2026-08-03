@@ -1,16 +1,23 @@
 # PROJECT_STATUS_REPORT.md - FlutterProject
 
 - **プロジェクト名:** FlutterProject
-- **最終更新日時:** 2025年8月8日
+- **最終更新日時:** 2026年8月3日
 - **全体ステータス:** 順調
 - **前回の報告からの主な進捗:**
-    - 新規プロジェクトとして発足。
-    - GitHub Codespacesを用いたFlutter開発基盤の構築を開始。
-    - 標準ドキュメント一式を整備。
+    - フェーズ1「開発基盤の確立」がほぼ完了。
+    - `devcontainer.json` を現行のDev Containerスキーマへ刷新（`customizations.vscode` への移行、ベースイメージを `ghcr.io/cirruslabs/flutter:stable` へ更新、`remoteUser` 指定の削除、転送ポートを8080へ変更）。
+    - Flutter初期アプリ（カウンターアプリ）を生成。Android / iOS / Web に対応。
+    - Flutter 3.44.8 stable にて、解析・テスト・Webリリースビルド・フォーマット確認がすべて成功することを確認。
+    - GitHub Actions による CI を整備。
+    - リポジトリルートの `README.md` を整備し、ドキュメント内のローカル固有パスを是正。
+    - CIにAndroid APKの自動ビルドを追加。`latest` タグのReleaseへ公開し、スマートフォンから直接ダウンロード・インストールできる導線を確保。
 - **現在の主要な課題・問題点:**
-    - なし
+    - 更新後の `devcontainer.json` について、実際にCodespacesを起動しての動作確認が未実施。
+    - APKビルドのローカル検証が未実施。開発環境から `dl.google.com` へ到達できずAndroid SDKを導入できないため、CI上での実行結果をもって確認とする。
+    - **フェーズ2の開発対象が未定。** ファイルサーバーアプリはGoogle ドライブで用途が満たせているため保留とし、代替案を検討中。
 - **中央開発室へのリクエスト/質問:**
-    - なし
+    - フェーズ2で開発するアプリの題材について、方針の確認を要する。
 - **次の主要なマイルストーン:**
-    - `.devcontainer.json` を用いた、Flutter開発環境の自動構築設定の完了。
-    - GitHub上でのリポジトリ作成と、Codespacesの初回起動テスト。
+    - Codespacesの起動テストと、Webプレビューの実機確認。
+    - APKの実機インストールによる動作確認。
+    - フェーズ2の開発対象の決定。

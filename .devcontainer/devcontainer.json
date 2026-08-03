@@ -1,16 +1,23 @@
- {
-       "name": "FlutterProject Dev Container",
-       "image": "cirrusci/flutter:latest",
-       "forwardPorts": [
-         3000
-       ],
-       "extensions": [
-         "dart-code.dart-code",
-         "dart-code.flutter"
-      ],
-      "postCreateCommand": "flutter doctor -v",
-      "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
-      },
-      "remoteUser": "flutter"
+{
+  "name": "FlutterProject Dev Container",
+  "image": "ghcr.io/cirruslabs/flutter:stable",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Flutter Web Preview",
+      "onAutoForward": "openPreview"
     }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dart-code.dart-code",
+        "dart-code.flutter"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "postCreateCommand": "flutter doctor -v && flutter pub get"
+}

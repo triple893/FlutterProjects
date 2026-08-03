@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Analyze, test and build web
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build web
+        run: flutter build web --release
+
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Available on every run, including pull requests. Downloads as a zip and
+      # requires being signed in to GitHub.
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      # Only for pushes to main and manual runs. Publishes to a fixed "latest"
+      # release so the APK has a stable, sign-in-free download URL that works
+      # directly from a phone browser.
+      - name: Publish APK to the "latest" release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > release-notes.md <<'NOTES'
+          このリポジトリの最新コードから自動ビルドされた Android アプリです。
+
+          ## インストール方法
+
+          1. スマホのブラウザで下の `app-release.apk` をタップしてダウンロード
+          2. ダウンロードしたファイルを開く
+          3. 「提供元不明のアプリ」の許可を求められたら許可する（初回のみ）
+
+          ## 注意
+
+          - デバッグ用の鍵で署名されているため、Google Play で配布することはできません。手元の端末で動作を確認するためのものです。
+          - main ブランチが更新されるたびに、このページの APK は自動で最新版に差し替わります。
+          NOTES
+
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest \
+            build/app/outputs/flutter-apk/app-release.apk \
+            --title "最新ビルド (latest)" \
+            --notes-file release-notes.md
