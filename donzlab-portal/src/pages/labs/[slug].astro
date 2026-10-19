@@ -1,0 +1,51 @@
+---
+import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import { resolveStarterSiteIdentity } from "../../utils/site-identity";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const { entry: lab, cacheHint } = await getEmDashEntry("labs", slug);
+if (!lab) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
+const seo = getSeoMeta(lab, {
+	siteTitle,
+	siteUrl: Astro.url.origin,
+	path: Astro.url.pathname.replace(/\/$/, ""),
+});
+---
+
+<Base
+	title={seo.title}
+	pageTitle={seo.ogTitle}
+	description={seo.description ?? lab.data.tagline}
+	canonical={seo.canonical}
+	content={{ collection: "labs", id: lab.data.id, slug }}
+>
+	<article class="prose">
+		<a class="back-link" href="/labs">← ラボ一覧</a>
+		{lab.data.emoji && <div class="card-emoji" aria-hidden="true">{lab.data.emoji}</div>}
+		<h1 {...lab.edit.title}>{lab.data.title}</h1>
+		{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
+		{lab.data.tagline && <p class="lead" {...lab.edit.tagline}>{lab.data.tagline}</p>}
+		<PortableText value={lab.data.content} />
+		{
+			lab.data.lab_url && (
+				<p>
+					<a href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">ラボを開く →</a>
+				</p>
+			)
+		}
+	</article>
+</Base>
+
+<style>
+	.lead {
+		font-size: 1.15rem;
+		font-weight: 700;
+	}
+</style>

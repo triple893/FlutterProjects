@@ -1,0 +1,47 @@
+---
+import { Image } from "emdash/ui";
+import type { Agent } from "../../emdash-env";
+
+interface Props {
+	agent: { id: string; data: Agent; edit: Record<string, Record<string, string>> };
+}
+
+const { agent } = Astro.props;
+---
+
+<a class="card agent-card" href={`/agents/${agent.id}`}>
+	<div class="portrait" {...agent.edit.portrait}>
+		{agent.data.portrait ? <Image image={agent.data.portrait} /> : <span aria-hidden="true">{agent.data.title.slice(0, 1)}</span>}
+	</div>
+	<h3 {...agent.edit.title}>{agent.data.title}</h3>
+	{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
+	{agent.data.catchphrase && <p {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</p>}
+	{agent.data.engine && <span class="meta">中の人: {agent.data.engine}</span>}
+</a>
+
+<style>
+	.portrait {
+		width: 72px;
+		height: 72px;
+		border-radius: 50%;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		background: linear-gradient(135deg, var(--accent), var(--accent-2));
+		color: var(--bg);
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: 1.8rem;
+	}
+
+	.portrait :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.role {
+		color: var(--accent-2) !important;
+		font-weight: 700;
+	}
+</style>

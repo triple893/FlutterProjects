@@ -1,0 +1,16 @@
+---
+import type { Lab } from "../../emdash-env";
+
+interface Props {
+	lab: { id: string; data: Lab; edit: Record<string, Record<string, string>> };
+}
+
+const { lab } = Astro.props;
+---
+
+<a class="card" href={`/labs/${lab.id}`}>
+	{lab.data.emoji && <div class="card-emoji" aria-hidden="true">{lab.data.emoji}</div>}
+	<h3 {...lab.edit.title}>{lab.data.title}</h3>
+	{lab.data.tagline && <p {...lab.edit.tagline}>{lab.data.tagline}</p>}
+	{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
+</a>

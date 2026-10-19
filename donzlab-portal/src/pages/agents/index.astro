@@ -1,0 +1,19 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import AgentCard from "../../components/AgentCard.astro";
+import { bySortOrder } from "../../utils/format";
+
+const { entries, cacheHint } = await getEmDashCollection("agents", { limit: 200 });
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const agents = [...entries].sort(bySortOrder);
+---
+
+<Base title="エージェント図鑑" description="DonzLab で働く AI エージェントたち">
+	<p class="eyebrow">Agents</p>
+	<h1>エージェント図鑑</h1>
+	<p class="meta">DonzLab で働く AI エージェントたち。</p>
+	<div class="grid">
+		{agents.map((agent) => <AgentCard agent={agent} />)}
+	</div>
+</Base>

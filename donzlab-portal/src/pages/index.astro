@@ -1,0 +1,134 @@
+---
+import { getEmDashCollection, getSiteSettings } from "emdash";
+import Base from "../layouts/Base.astro";
+import LabCard from "../components/LabCard.astro";
+import AgentCard from "../components/AgentCard.astro";
+import { resolveStarterSiteIdentity } from "../utils/site-identity";
+import { bySortOrder, formatDate } from "../utils/format";
+
+const [labsResult, agentsResult, postsResult, linksResult, settings] = await Promise.all([
+	getEmDashCollection("labs", { limit: 50 }),
+	getEmDashCollection("agents", { limit: 50 }),
+	getEmDashCollection("posts", { orderBy: { published_at: "desc" }, limit: 3 }),
+	getEmDashCollection("links", { limit: 20 }),
+	getSiteSettings(),
+]);
+if (Astro.cache?.enabled) {
+	for (const r of [labsResult, agentsResult, postsResult, linksResult]) Astro.cache.set(r.cacheHint);
+}
+
+const labs = [...labsResult.entries].sort(bySortOrder);
+const agents = [...agentsResult.entries].sort(bySortOrder).slice(0, 4);
+const posts = postsResult.entries;
+const links = [...linksResult.entries].sort(bySortOrder);
+const { siteTitle, siteTagline } = resolveStarterSiteIdentity(settings);
+---
+
+<Base title={siteTitle} description={siteTagline}>
+	<section class="hero">
+		<p class="eyebrow">AI Agent Development Lab</p>
+		<h1>Donz<span>Lab</span></h1>
+		<p class="lead">{siteTagline}</p>
+		<p class="sub">
+			複数の AI が役割を分けて動く、丼ちゃんの開発環境。<br />
+			各ラボへの入口はここから。
+		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-head">
+			<h2>ラボ</h2>
+			<a href="/labs">すべて見る →</a>
+		</div>
+		<div class="grid">
+			{labs.map((lab) => <LabCard lab={lab} />)}
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-head">
+			<h2>エージェント図鑑</h2>
+			<a href="/agents">すべて見る →</a>
+		</div>
+		<div class="grid">
+			{agents.map((agent) => <AgentCard agent={agent} />)}
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-head">
+			<h2>開発日記</h2>
+			<a href="/posts">すべて見る →</a>
+		</div>
+		{
+			posts.length === 0 ? (
+				<p class="meta">まだ日記はありません。</p>
+			) : (
+				<div class="grid">
+					{posts.map((post) => (
+						<a class="card" href={`/posts/${post.id}`}>
+							<span class="meta">{formatDate(post.data.publishedAt)}</span>
+							<h3 {...post.edit.title}>{post.data.title}</h3>
+							{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+						</a>
+					))}
+				</div>
+			)
+		}
+	</section>
+
+	{
+		links.length > 0 && (
+			<section class="section">
+				<div class="section-head">
+					<h2>活動リンク</h2>
+				</div>
+				<div class="link-row">
+					{links.map((link) => (
+						<a class="card link-chip" href={link.data.link_url} target="_blank" rel="noopener noreferrer">
+							<span class="meta">{link.data.platform}</span>
+							<strong>{link.data.title}</strong>
+						</a>
+					))}
+				</div>
+			</section>
+		)
+	}
+</Base>
+
+<style>
+	.hero {
+		padding: 48px 0 8px;
+	}
+
+	.hero h1 {
+		margin: 4px 0 8px;
+		font-size: clamp(2.6rem, 8vw, 4.5rem);
+		font-weight: 800;
+	}
+
+	.hero h1 span {
+		color: var(--accent);
+	}
+
+	.lead {
+		margin: 0;
+		font-size: clamp(1.1rem, 3vw, 1.4rem);
+		font-weight: 700;
+	}
+
+	.sub {
+		color: var(--text-muted);
+	}
+
+	.link-row {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.link-chip {
+		padding: 12px 18px;
+		gap: 2px;
+	}
+</style>

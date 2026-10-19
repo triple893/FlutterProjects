@@ -1,0 +1,58 @@
+---
+import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
+import { Image, PortableText } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import { resolveStarterSiteIdentity } from "../../utils/site-identity";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const { entry: agent, cacheHint } = await getEmDashEntry("agents", slug);
+if (!agent) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
+const seo = getSeoMeta(agent, {
+	siteTitle,
+	siteUrl: Astro.url.origin,
+	path: Astro.url.pathname.replace(/\/$/, ""),
+});
+---
+
+<Base
+	title={seo.title}
+	pageTitle={seo.ogTitle}
+	description={seo.description ?? agent.data.catchphrase}
+	canonical={seo.canonical}
+	content={{ collection: "agents", id: agent.data.id, slug }}
+>
+	<article class="prose">
+		<a class="back-link" href="/agents">← エージェント図鑑</a>
+		{
+			agent.data.portrait && (
+				<div {...agent.edit.portrait}>
+					<Image image={agent.data.portrait} />
+				</div>
+			)
+		}
+		<h1 {...agent.edit.title}>{agent.data.title}</h1>
+		{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
+		{agent.data.catchphrase && <blockquote {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</blockquote>}
+		<PortableText value={agent.data.content} />
+		{agent.data.engine && <p class="meta">中の人: {agent.data.engine}</p>}
+	</article>
+</Base>
+
+<style>
+	.role {
+		color: var(--accent-2);
+		font-weight: 700;
+	}
+
+	blockquote {
+		margin: 16px 0;
+		padding-left: 16px;
+		border-left: 3px solid var(--accent);
+		font-size: 1.1rem;
+	}
+</style>

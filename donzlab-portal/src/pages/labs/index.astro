@@ -1,0 +1,18 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import LabCard from "../../components/LabCard.astro";
+import { bySortOrder } from "../../utils/format";
+
+const { entries, cacheHint } = await getEmDashCollection("labs", { limit: 100 });
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const labs = [...entries].sort(bySortOrder);
+---
+
+<Base title="ラボ一覧" description="DonzLab の各ラボへの入口">
+	<p class="eyebrow">Labs</p>
+	<h1>ラボ一覧</h1>
+	<div class="grid">
+		{labs.map((lab) => <LabCard lab={lab} />)}
+	</div>
+</Base>

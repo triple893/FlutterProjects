@@ -1,0 +1,748 @@
+{
+	"$schema": "https://emdashcms.com/seed.schema.json",
+	"version": "1",
+	"meta": {
+		"name": "DonzLab Portal",
+		"description": "DonzLab の各ラボへの入口となるポータル",
+		"author": "DonzLab"
+	},
+	"settings": {
+		"title": "DonzLab",
+		"tagline": "AI と一緒に、つくって、ためす。"
+	},
+	"collections": [
+		{
+			"slug": "labs",
+			"label": "ラボ",
+			"labelSingular": "ラボ",
+			"urlPattern": "/labs/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "ラボ名",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "emoji",
+					"label": "アイコン絵文字",
+					"type": "string"
+				},
+				{
+					"slug": "tagline",
+					"label": "ひとこと",
+					"type": "string",
+					"searchable": true
+				},
+				{
+					"slug": "lab_status",
+					"label": "ステータス",
+					"type": "select",
+					"defaultValue": "準備中",
+					"validation": {
+						"options": [
+							"稼働中",
+							"開発中",
+							"準備中"
+						]
+					}
+				},
+				{
+					"slug": "lab_url",
+					"label": "ラボへのリンク",
+					"type": "url"
+				},
+				{
+					"slug": "sort_order",
+					"label": "並び順",
+					"type": "integer",
+					"defaultValue": 100
+				},
+				{
+					"slug": "content",
+					"label": "紹介文",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "agents",
+			"label": "エージェント図鑑",
+			"labelSingular": "エージェント",
+			"urlPattern": "/agents/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "名前",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "role",
+					"label": "役職・役割",
+					"type": "string",
+					"searchable": true
+				},
+				{
+					"slug": "engine",
+					"label": "中の人（AI）",
+					"type": "string"
+				},
+				{
+					"slug": "portrait",
+					"label": "立ち絵",
+					"type": "image"
+				},
+				{
+					"slug": "catchphrase",
+					"label": "キャッチコピー",
+					"type": "string",
+					"searchable": true
+				},
+				{
+					"slug": "sort_order",
+					"label": "並び順",
+					"type": "integer",
+					"defaultValue": 100
+				},
+				{
+					"slug": "content",
+					"label": "プロフィール",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "posts",
+			"label": "開発日記",
+			"labelSingular": "日記",
+			"urlPattern": "/posts/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"scheduling",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "タイトル",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "featured_image",
+					"label": "アイキャッチ",
+					"type": "image"
+				},
+				{
+					"slug": "excerpt",
+					"label": "要約",
+					"type": "text",
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "本文",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "links",
+			"label": "活動リンク",
+			"labelSingular": "リンク",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "表示名",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "link_url",
+					"label": "URL",
+					"type": "url",
+					"required": true
+				},
+				{
+					"slug": "platform",
+					"label": "種類",
+					"type": "select",
+					"validation": {
+						"options": [
+							"X",
+							"YouTube",
+							"TikTok",
+							"note",
+							"GitHub",
+							"その他"
+						]
+					}
+				},
+				{
+					"slug": "sort_order",
+					"label": "並び順",
+					"type": "integer",
+					"defaultValue": 100
+				}
+			]
+		},
+		{
+			"slug": "pages",
+			"label": "固定ページ",
+			"labelSingular": "ページ",
+			"urlPattern": "/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "タイトル",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "本文",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		}
+	],
+	"taxonomies": [
+		{
+			"name": "category",
+			"label": "カテゴリ",
+			"labelSingular": "カテゴリ",
+			"hierarchical": true,
+			"collections": [
+				"posts"
+			],
+			"terms": [
+				{
+					"slug": "devlog",
+					"label": "開発日記"
+				},
+				{
+					"slug": "release",
+					"label": "リリース"
+				}
+			]
+		}
+	],
+	"menus": [
+		{
+			"name": "primary",
+			"label": "メインメニュー",
+			"items": [
+				{
+					"type": "custom",
+					"label": "ホーム",
+					"url": "/"
+				},
+				{
+					"type": "custom",
+					"label": "ラボ",
+					"url": "/labs"
+				},
+				{
+					"type": "custom",
+					"label": "エージェント図鑑",
+					"url": "/agents"
+				},
+				{
+					"type": "custom",
+					"label": "開発日記",
+					"url": "/posts"
+				},
+				{
+					"type": "custom",
+					"label": "DonzLabについて",
+					"url": "/about"
+				}
+			]
+		}
+	],
+	"content": {
+		"labs": [
+			{
+				"id": "donz-corelab",
+				"slug": "donz-corelab",
+				"status": "published",
+				"data": {
+					"title": "DonzCorelab",
+					"emoji": "🧠",
+					"tagline": "AI開発環境の中枢。インフラ・DB・エージェント設計",
+					"lab_status": "稼働中",
+					"sort_order": 10,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab 全体を支えるコア。インフラ要件定義、データベース、エージェント設計をまとめて扱う。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "chord-sheet-maker",
+				"slug": "chord-sheet-maker",
+				"status": "published",
+				"data": {
+					"title": "ChordSheetMaker",
+					"emoji": "🎸",
+					"tagline": "耳コピ支援Webツール。タブ譜の自動生成",
+					"lab_status": "開発中",
+					"sort_order": 20,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "耳コピを手伝うWebツール。タブ譜を自動で作る。マイナー曲や地下アイドル曲に強いのが売り。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "donz-music-lab",
+				"slug": "donz-music-lab",
+				"status": "published",
+				"data": {
+					"title": "DonzMusicLab",
+					"emoji": "🎼",
+					"tagline": "作曲エージェントと音楽まわりの研究",
+					"lab_status": "開発中",
+					"sort_order": 30,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "作曲エージェントを中心に、音楽づくりを AI と進めるラボ。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pasta-lab",
+				"slug": "pasta-lab",
+				"status": "published",
+				"data": {
+					"title": "父ちゃんのパスタAI研究所",
+					"emoji": "🍝",
+					"tagline": "レシピと料理を AI と研究する",
+					"lab_status": "準備中",
+					"sort_order": 40,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "料理とレシピ配信を AI と一緒に研究するラボ。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "donz-marketing-lab",
+				"slug": "donz-marketing-lab",
+				"status": "published",
+				"data": {
+					"title": "DonzMarketingLab",
+					"emoji": "📣",
+					"tagline": "SNS・発信まわりの戦略ラボ",
+					"lab_status": "稼働中",
+					"sort_order": 50,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "X・YouTube・TikTok などの発信を、AI と組んで設計・検証するラボ。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "llm-cost-lab",
+				"slug": "llm-cost-lab",
+				"status": "published",
+				"data": {
+					"title": "LLM比較Lab",
+					"emoji": "📊",
+					"tagline": "LLM のコストと性能を比べる",
+					"lab_status": "開発中",
+					"sort_order": 60,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "いろいろな LLM のコストパフォーマンスを測って比べるラボ。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "knowledge-graph",
+				"slug": "knowledge-graph",
+				"status": "published",
+				"data": {
+					"title": "Graphify 知識基盤",
+					"emoji": "🕸️",
+					"tagline": "Obsidian で作る知識の神経網",
+					"lab_status": "稼働中",
+					"sort_order": 70,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "Obsidian と Graphify で、DonzLab の知識をつないでいく基盤。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "flutter-project",
+				"slug": "flutter-project",
+				"status": "published",
+				"data": {
+					"title": "FlutterProject",
+					"emoji": "📱",
+					"tagline": "AI と一緒に作るスマホアプリ",
+					"lab_status": "開発中",
+					"sort_order": 80,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "Flutter で Android / iOS 両対応のアプリを AI と一緒に作るプロジェクト。"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"agents": [
+			{
+				"id": "kuro",
+				"slug": "kuro",
+				"status": "published",
+				"data": {
+					"title": "クロちゃん",
+					"role": "CEO / 意味・判断・方針",
+					"engine": "Claude",
+					"catchphrase": "意味と方針は、クロに聞け。",
+					"sort_order": 10,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab の CEO。日本語、戦略、大きな判断、言葉の精度を担当する。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "kode",
+				"slug": "kode",
+				"status": "published",
+				"data": {
+					"title": "コデちゃん",
+					"role": "COO / 総合管制・実行・進捗",
+					"engine": "Codex",
+					"catchphrase": "実装と進捗は、コデが握る。",
+					"sort_order": 20,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab の COO。実装、査読、ファイル管理、進捗の見える化を担当する。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "gura",
+				"slug": "gura",
+				"status": "published",
+				"data": {
+					"title": "グラちゃん",
+					"role": "CSO / 調査・クリエイティブ",
+					"engine": "Gemini",
+					"catchphrase": "大量調査と素材づくりは、グラにおまかせ。",
+					"sort_order": 30,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab の CSO。爆速調査、HTML、画像、マーケ、並列処理を担当する。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "sunji",
+				"slug": "sunji",
+				"status": "published",
+				"data": {
+					"title": "スン爺",
+					"role": "タスクの番人",
+					"engine": "",
+					"catchphrase": "タスクは、わしが見張っとる。",
+					"sort_order": 40,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "タスクの番人。やることリストを見張り、取りこぼしを許さない。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pulse",
+				"slug": "pulse",
+				"status": "published",
+				"data": {
+					"title": "パルスくん",
+					"role": "サーバー診断",
+					"engine": "",
+					"catchphrase": "サーバーの脈、測っときます。",
+					"sort_order": 50,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "サーバーやサービスが生きているかを毎朝確かめる係。"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"links": [
+			{
+				"id": "x-aimagedon",
+				"slug": "x-aimagedon",
+				"status": "published",
+				"data": {
+					"title": "X「AIまげ丼」",
+					"link_url": "https://x.com/aimagedon",
+					"platform": "X",
+					"sort_order": 10
+				}
+			}
+		],
+		"posts": [
+			{
+				"id": "portal-start",
+				"slug": "portal-start",
+				"status": "published",
+				"data": {
+					"title": "DonzLab ポータル、動き出しました",
+					"excerpt": "EmDash で DonzLab のポータルを作りはじめた記録。",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab の各ラボをまとめる入口として、このポータルを作りはじめた。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "なぜ EmDash？"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b2",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s2",
+									"text": "AI がMCP経由で記事を下書きできる CMS だから。ラボの更新を AI が書いて、丼ちゃんが確認して公開する、という流れを試している。"
+								}
+							]
+						}
+					]
+				},
+				"taxonomies": {
+					"category": [
+						"devlog"
+					]
+				}
+			}
+		],
+		"pages": [
+			{
+				"id": "about",
+				"slug": "about",
+				"status": "published",
+				"data": {
+					"title": "DonzLab について",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "DonzLab は、丼ちゃんが作って動かしている AI エージェント開発環境。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "複数の AI（Claude / Codex / Gemini）が役割を分けて、プロダクト開発・情報整理・コンテンツ制作を進めている。"
+								}
+							]
+						}
+					]
+				}
+			}
+		]
+	}
+}
