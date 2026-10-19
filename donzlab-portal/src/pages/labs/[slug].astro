@@ -1,7 +1,8 @@
 ---
 import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
-import { PortableText } from "emdash/ui";
+import { Image, PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
+import WorldArt from "../../components/WorldArt.astro";
 import { resolveStarterSiteIdentity } from "../../utils/site-identity";
 
 const slug = decodeSlug(Astro.params.slug);
@@ -17,6 +18,9 @@ const seo = getSeoMeta(lab, {
 	siteUrl: Astro.url.origin,
 	path: Astro.url.pathname.replace(/\/$/, ""),
 });
+
+const isBusiness = lab.data.world === "business";
+const works = lab.data.works ?? [];
 ---
 
 <Base
@@ -24,28 +28,323 @@ const seo = getSeoMeta(lab, {
 	pageTitle={seo.ogTitle}
 	description={seo.description ?? lab.data.tagline}
 	canonical={seo.canonical}
+	image={seo.ogImage}
 	content={{ collection: "labs", id: lab.data.id, slug }}
+	mode={isBusiness ? "business" : "world"}
+	accent={lab.data.accent}
 >
-	<article class="prose">
-		<a class="back-link" href="/labs">← ラボ一覧</a>
-		{lab.data.emoji && <div class="card-emoji" aria-hidden="true">{lab.data.emoji}</div>}
-		<h1 {...lab.edit.title}>{lab.data.title}</h1>
-		{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
-		{lab.data.tagline && <p class="lead" {...lab.edit.tagline}>{lab.data.tagline}</p>}
-		<PortableText value={lab.data.content} />
-		{
-			lab.data.lab_url && (
-				<p>
-					<a href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">ラボを開く →</a>
-				</p>
-			)
-		}
-	</article>
+	{
+		isBusiness ? (
+			<>
+				<section class="biz-hero">
+					<div class="container biz-hero-inner">
+						<div>
+							<a class="back-link" href="/labs">← ラボ一覧</a>
+							<span class="eyebrow">Lab</span>
+							<h1 {...lab.edit.title}>{lab.data.title}</h1>
+							{lab.data.tagline && <p class="biz-lead" {...lab.edit.tagline}>{lab.data.tagline}</p>}
+							{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
+						</div>
+						<div class="biz-art" style={`view-transition-name: world-${lab.id}`}>
+							{lab.data.hero_image ? (
+								<Image image={lab.data.hero_image} />
+							) : (
+								<WorldArt world="business" accent={lab.data.accent} seed={lab.id} variant="hero" />
+							)}
+						</div>
+					</div>
+				</section>
+				<div class="container biz-body">
+					<section class="prose">
+						<h2>概要</h2>
+						<PortableText value={lab.data.content} />
+					</section>
+					{works.length > 0 && (
+						<section>
+							<h2>取り組み</h2>
+							<table class="biz-table">
+								<thead>
+									<tr>
+										<th scope="col">項目</th>
+										<th scope="col">内容</th>
+										<th scope="col">状態</th>
+									</tr>
+								</thead>
+								<tbody>
+									{works.map((w) => (
+										<tr>
+											<td>{w.link ? <a href={w.link}>{w.name}</a> : w.name}</td>
+											<td>{w.summary}</td>
+											<td>{w.state && <span class="badge" data-status={w.state}>{w.state}</span>}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</section>
+					)}
+					{lab.data.lab_url && (
+						<p>
+							<a class="biz-button" href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">
+								ラボのサイトを開く
+							</a>
+						</p>
+					)}
+				</div>
+			</>
+		) : (
+			<>
+				<section class="world-hero" data-parallax>
+					<div class="world-art" style={`view-transition-name: world-${lab.id}`}>
+						{lab.data.hero_image ? (
+							<Image image={lab.data.hero_image} />
+						) : (
+							<WorldArt world={lab.data.world} accent={lab.data.accent} seed={lab.id} variant="hero" />
+						)}
+					</div>
+					<div class="container world-title">
+						<a class="back-link enter" href="/">← 城へ戻る</a>
+						<span class="eyebrow enter">Welcome to</span>
+						<h1 class="enter enter-2" {...lab.edit.title}>
+							{lab.data.title}
+						</h1>
+						{lab.data.tagline && (
+							<p class="world-tagline enter enter-3" {...lab.edit.tagline}>
+								{lab.data.tagline}
+							</p>
+						)}
+						{lab.data.lab_status && (
+							<span class="badge enter enter-3" data-status={lab.data.lab_status}>
+								{lab.data.lab_status}
+							</span>
+						)}
+					</div>
+				</section>
+
+				<div class="container world-body">
+					<section class="panel prose enter enter-3">
+						<PortableText value={lab.data.content} />
+						{lab.data.lab_url && (
+							<p>
+								<a href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">
+									ラボの外へ →
+								</a>
+							</p>
+						)}
+					</section>
+
+					{works.length > 0 && (
+						<section class="section">
+							<span class="eyebrow">Inside this world</span>
+							<h2>この世界でやっていること</h2>
+							<div class="grid">
+								{works.map((w) => (
+									<article class="panel work">
+										{w.state && (
+											<span class="badge" data-status={w.state}>
+												{w.state}
+											</span>
+										)}
+										<h3>{w.link ? <a href={w.link}>{w.name}</a> : w.name}</h3>
+										{w.summary && <p>{w.summary}</p>}
+									</article>
+								))}
+							</div>
+						</section>
+					)}
+
+					<p class="return">
+						<a href="/#gates">← ほかの門へ</a>
+					</p>
+				</div>
+			</>
+		)
+	}
 </Base>
 
+<script>
+	const hero = document.querySelector<HTMLElement>("[data-parallax]");
+	if (hero && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		hero.addEventListener("pointermove", (e) => {
+			const r = hero.getBoundingClientRect();
+			hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+			hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+		});
+	}
+</script>
+
 <style>
-	.lead {
-		font-size: 1.15rem;
+	/* ---------- immersive world ---------- */
+	.world-hero {
+		position: relative;
+		min-height: min(88vh, 820px);
+		display: flex;
+		align-items: flex-end;
+		overflow: hidden;
+	}
+
+	.world-art {
+		position: absolute;
+		inset: -3%;
+		transform: translate(calc(var(--mx, 0) * -28px), calc(var(--my, 0) * -18px)) scale(1.02);
+		transition: transform 0.4s ease-out;
+	}
+
+	.world-art :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.world-hero::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(7, 8, 12, 0) 35%, rgba(7, 8, 12, 0.7) 75%, var(--ink) 100%);
+		pointer-events: none;
+	}
+
+	.world-title {
+		position: relative;
+		z-index: 2;
+		padding-bottom: 48px;
+	}
+
+	.world-title h1 {
+		margin: 6px 0;
+		font-size: clamp(2.4rem, 8vw, 5.2rem);
+		line-height: 1.1;
+		text-shadow: 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+
+	.world-tagline {
+		margin: 0 0 14px;
+		font-family: var(--font-display);
+		font-size: clamp(1.05rem, 2.6vw, 1.45rem);
+		color: color-mix(in srgb, var(--accent) 35%, #ffffff);
+	}
+
+	.world-body {
+		padding-bottom: 80px;
+	}
+
+	.world-body > .panel {
+		margin-top: 8px;
+		border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+	}
+
+	.work {
+		border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+	}
+
+	.work h3 a {
+		color: var(--text);
+	}
+
+	.return {
+		margin-top: 48px;
+	}
+
+	/* ---------- business ---------- */
+	.biz-hero {
+		border-bottom: 1px solid var(--line);
+		background: #f7f9fc;
+	}
+
+	.biz-hero-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: 32px;
+		align-items: center;
+		padding-top: 40px;
+		padding-bottom: 40px;
+	}
+
+	.biz-hero h1 {
+		margin: 6px 0 8px;
+		font-size: clamp(2rem, 5vw, 2.8rem);
+	}
+
+	.biz-lead {
+		font-size: 1.1rem;
+		color: var(--text-muted);
+		margin: 0 0 12px;
+	}
+
+	.biz-art {
+		border-radius: 12px;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		aspect-ratio: 16 / 10;
+	}
+
+	.biz-body {
+		padding-top: 40px;
+		padding-bottom: 80px;
+		display: grid;
+		gap: 40px;
+	}
+
+	.biz-body h2 {
+		font-size: 1.35rem;
+		margin: 0 0 12px;
+		padding-bottom: 8px;
+		border-bottom: 2px solid var(--accent);
+		display: inline-block;
+	}
+
+	.biz-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.95rem;
+	}
+
+	.biz-table th,
+	.biz-table td {
+		text-align: left;
+		padding: 12px 14px;
+		border-bottom: 1px solid var(--line);
+		vertical-align: top;
+	}
+
+	.biz-table th {
+		color: var(--text-muted);
+		font-weight: 500;
+		font-size: 0.85rem;
+		background: #f7f9fc;
+	}
+
+	.biz-button {
+		display: inline-block;
+		padding: 12px 24px;
+		border-radius: 8px;
+		background: var(--accent);
+		color: #ffffff;
 		font-weight: 700;
+	}
+
+	.biz-button:hover {
+		text-decoration: none;
+		filter: brightness(1.08);
+	}
+
+	@media (max-width: 720px) {
+		.biz-hero-inner {
+			grid-template-columns: 1fr;
+		}
+
+		.biz-table thead {
+			display: none;
+		}
+
+		.biz-table tr {
+			display: grid;
+			padding: 10px 0;
+			border-bottom: 1px solid var(--line);
+		}
+
+		.biz-table td {
+			border: 0;
+			padding: 2px 0;
+		}
 	}
 </style>

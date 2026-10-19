@@ -44,38 +44,46 @@ const categories = post.data.terms?.category ?? [];
 	image={seo.ogImage}
 	content={{ collection: "posts", id: post.data.id, slug }}
 >
-	<article class="prose">
-		<a class="back-link" href="/posts">← 開発日記</a>
-		{
-			post.data.featured_image && (
-				<div {...post.edit.featured_image}>
-					<Image image={post.data.featured_image} />
-				</div>
-			)
-		}
+	<div class="container page">
+		<article class="prose">
+			<a class="back-link" href="/posts">← 開発日記</a>
+			{
+				post.data.featured_image && (
+					<div {...post.edit.featured_image}>
+						<Image image={post.data.featured_image} />
+					</div>
+				)
+			}
 
-		<h1 {...post.edit.title}>{post.data.title}</h1>
+			<h1 {...post.edit.title}>{post.data.title}</h1>
 
-		{
-			post.data.publishedAt && (
-				<time datetime={post.data.publishedAt.toISOString()}>
-					{formatDate(post.data.publishedAt)}
-				</time>
-			)
-		}
+			{
+				post.data.publishedAt && (
+					<time datetime={post.data.publishedAt.toISOString()}>
+						{formatDate(post.data.publishedAt)}
+					</time>
+				)
+			}
 
-		{
-			categories.length > 0 && (
-				<div>
-					{categories.map((c) => (
-						<a href={`/category/${c.slug}`}>{c.label}</a>
-					))}
-				</div>
-			)
-		}
+			{
+				categories.length > 0 && (
+					<div>
+						{categories.map((c) => (
+							<a href={`/category/${c.slug}`}>{c.label}</a>
+						))}
+					</div>
+				)
+			}
 
-		<PortableText value={post.data.content} />
+			<PortableText value={post.data.content} />
 
-	</article>
-
+		</article>
+	</div>
 </Base>
+
+<style>
+	.page {
+		padding-top: 48px;
+		padding-bottom: 80px;
+	}
+</style>

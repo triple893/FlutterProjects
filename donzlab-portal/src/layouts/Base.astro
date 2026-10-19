@@ -14,10 +14,15 @@ interface Props {
 	canonical?: string | null;
 	/** Pass content reference for plugin page contributions on content pages */
 	content?: { collection: string; id: string; slug?: string | null };
+	/** castle = hub, world = inside a lab, business = clean corporate pages */
+	mode?: "castle" | "world" | "business";
+	/** Lab colour for world mode */
+	accent?: string | null;
 }
 
-const { title, pageTitle, description, image, canonical, content } =
+const { title, pageTitle, description, image, canonical, content, mode = "castle", accent } =
 	Astro.props;
+const accentStyle = accent && /^#[0-9a-f]{6}$/i.test(accent) ? `--accent:${accent}` : undefined;
 const [settingsResult, menuResult] = await Promise.all([
 	getSiteSettingsWithCacheHint(),
 	getMenuWithCacheHint("primary"),
@@ -58,9 +63,16 @@ const pageCtx = createPublicPageContext({
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{fullTitle}</title>
+		<meta name="theme-color" content={mode === "business" ? "#ffffff" : "#07080c"} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@600;800&display=swap"
+		/>
 		<EmDashHead page={pageCtx} />
 	</head>
-	<body>
+	<body data-mode={mode} style={accentStyle}>
 		<EmDashBodyStart page={pageCtx} />
 
 		<header class="site-header">
@@ -75,7 +87,7 @@ const pageCtx = createPublicPageContext({
 							/>
 						) : (
 							<>
-								Donz<span>Lab</span>
+								Don'z <em>Lab</em>
 							</>
 						)
 					}
@@ -98,13 +110,11 @@ const pageCtx = createPublicPageContext({
 		</header>
 
 		<main>
-			<div class="container">
-				<slot />
-			</div>
+			<slot />
 		</main>
 
 		<footer class="site-footer">
-			<div class="container">© DonzLab — {siteTagline}</div>
+			<div class="container">© Don'z Lab — {siteTagline}</div>
 		</footer>
 
 		<EmDashBodyEnd page={pageCtx} />

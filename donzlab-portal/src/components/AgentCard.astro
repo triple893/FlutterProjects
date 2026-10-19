@@ -7,31 +7,56 @@ interface Props {
 }
 
 const { agent } = Astro.props;
+const layer = agent.data.layer ?? "街";
 ---
 
-<a class="card agent-card" href={`/agents/${agent.id}`}>
-	<div class="portrait" {...agent.edit.portrait}>
+<a class="agent" href={`/agents/${agent.id}`} data-layer={layer}>
+	<div class="portrait" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
 		{agent.data.portrait ? <Image image={agent.data.portrait} /> : <span aria-hidden="true">{agent.data.title.slice(0, 1)}</span>}
 	</div>
-	<h3 {...agent.edit.title}>{agent.data.title}</h3>
-	{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
-	{agent.data.catchphrase && <p {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</p>}
-	{agent.data.engine && <span class="meta">中の人: {agent.data.engine}</span>}
+	<div class="body">
+		{agent.data.epithet && <span class="epithet" {...agent.edit.epithet}>{agent.data.epithet}</span>}
+		<h3 {...agent.edit.title}>{agent.data.title}</h3>
+		{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
+		{agent.data.engine && <span class="meta">中の人: {agent.data.engine}</span>}
+	</div>
 </a>
 
 <style>
+	.agent {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		padding: 18px;
+		border-radius: var(--radius);
+		border: 1px solid var(--line);
+		background: var(--ink-raised);
+		color: var(--text);
+		transition:
+			transform 0.25s ease,
+			border-color 0.25s ease;
+	}
+
+	.agent:hover {
+		text-decoration: none;
+		transform: translateY(-3px);
+		border-color: var(--gold);
+	}
+
 	.portrait {
-		width: 72px;
-		height: 72px;
+		flex: none;
+		position: relative;
+		width: 84px;
+		height: 84px;
 		border-radius: 50%;
 		overflow: hidden;
 		display: grid;
 		place-items: center;
-		background: linear-gradient(135deg, var(--accent), var(--accent-2));
-		color: var(--bg);
+		background: radial-gradient(circle at 30% 30%, #2a2416, #0b0c12 70%);
+		border: 1px solid var(--gold);
+		color: var(--gold-soft);
 		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: 1.8rem;
+		font-size: 2rem;
 	}
 
 	.portrait :global(img) {
@@ -40,8 +65,48 @@ const { agent } = Astro.props;
 		object-fit: cover;
 	}
 
+	/* 天: a halo of gold circuitry */
+	[data-layer="天"] .portrait {
+		box-shadow:
+			0 0 0 4px #07080c,
+			0 0 0 5px rgba(217, 180, 90, 0.7),
+			0 0 28px rgba(217, 180, 90, 0.45);
+	}
+
+	/* 街: warm lantern light */
+	[data-layer="街"] .portrait {
+		border-color: #e08a4f;
+		background: radial-gradient(circle at 30% 30%, #3a2014, #0b0c12 70%);
+		color: #f6c79c;
+	}
+
+	[data-layer="復活待ち"] {
+		opacity: 0.6;
+	}
+
+	[data-layer="復活待ち"] .portrait {
+		border-style: dashed;
+	}
+
+	.body {
+		min-width: 0;
+	}
+
+	.epithet {
+		display: block;
+		color: var(--gold);
+		font-size: 0.75rem;
+		letter-spacing: 0.08em;
+	}
+
+	h3 {
+		margin: 2px 0;
+		font-size: 1.15rem;
+	}
+
 	.role {
-		color: var(--accent-2) !important;
-		font-weight: 700;
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.88rem;
 	}
 </style>

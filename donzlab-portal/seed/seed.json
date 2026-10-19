@@ -2,12 +2,12 @@
 	"$schema": "https://emdashcms.com/seed.schema.json",
 	"version": "1",
 	"meta": {
-		"name": "DonzLab Portal",
-		"description": "DonzLab の各ラボへの入口となるポータル",
-		"author": "DonzLab"
+		"name": "Don'z Lab Portal",
+		"description": "Don'z Lab の各ラボへの入口となる城",
+		"author": "Don'z Lab"
 	},
 	"settings": {
-		"title": "DonzLab",
+		"title": "Don'z Lab",
 		"tagline": "AI と一緒に、つくって、ためす。"
 	},
 	"collections": [
@@ -32,11 +32,6 @@
 					"searchable": true
 				},
 				{
-					"slug": "emoji",
-					"label": "アイコン絵文字",
-					"type": "string"
-				},
-				{
 					"slug": "tagline",
 					"label": "ひとこと",
 					"type": "string",
@@ -56,8 +51,41 @@
 					}
 				},
 				{
+					"slug": "world",
+					"label": "世界観（背景グラフィック）",
+					"type": "select",
+					"defaultValue": "circuit",
+					"validation": {
+						"options": [
+							"circuit",
+							"strings",
+							"sound",
+							"kitchen",
+							"signal",
+							"constellation",
+							"device",
+							"business"
+						]
+					}
+				},
+				{
+					"slug": "accent",
+					"label": "テーマカラー（#rrggbb）",
+					"type": "string"
+				},
+				{
+					"slug": "thumbnail",
+					"label": "サムネイル画像",
+					"type": "image"
+				},
+				{
+					"slug": "hero_image",
+					"label": "メインビジュアル",
+					"type": "image"
+				},
+				{
 					"slug": "lab_url",
-					"label": "ラボへのリンク",
+					"label": "ラボの外部リンク",
 					"type": "url"
 				},
 				{
@@ -71,6 +99,42 @@
 					"label": "紹介文",
 					"type": "portableText",
 					"searchable": true
+				},
+				{
+					"slug": "works",
+					"label": "この世界でやっていること",
+					"type": "repeater",
+					"validation": {
+						"maxItems": 12,
+						"subFields": [
+							{
+								"slug": "name",
+								"label": "名前",
+								"type": "string",
+								"required": true
+							},
+							{
+								"slug": "summary",
+								"label": "説明",
+								"type": "text"
+							},
+							{
+								"slug": "state",
+								"label": "状態",
+								"type": "select",
+								"options": [
+									"稼働中",
+									"開発中",
+									"構想中"
+								]
+							},
+							{
+								"slug": "link",
+								"label": "リンク",
+								"type": "url"
+							}
+						]
+					}
 				}
 			]
 		},
@@ -95,8 +159,28 @@
 					"searchable": true
 				},
 				{
+					"slug": "epithet",
+					"label": "二つ名",
+					"type": "string",
+					"searchable": true
+				},
+				{
+					"slug": "layer",
+					"label": "所属",
+					"type": "select",
+					"defaultValue": "街",
+					"validation": {
+						"options": [
+							"本陣",
+							"天",
+							"街",
+							"復活待ち"
+						]
+					}
+				},
+				{
 					"slug": "role",
-					"label": "役職・役割",
+					"label": "担当",
 					"type": "string",
 					"searchable": true
 				},
@@ -107,12 +191,12 @@
 				},
 				{
 					"slug": "portrait",
-					"label": "立ち絵",
+					"label": "肖像画",
 					"type": "image"
 				},
 				{
 					"slug": "catchphrase",
-					"label": "キャッチコピー",
+					"label": "ひとこと",
 					"type": "string",
 					"searchable": true
 				},
@@ -236,6 +320,23 @@
 					"searchable": true
 				},
 				{
+					"slug": "layout",
+					"label": "レイアウト",
+					"type": "select",
+					"defaultValue": "business",
+					"validation": {
+						"options": [
+							"business",
+							"world"
+						]
+					}
+				},
+				{
+					"slug": "lead",
+					"label": "リード文",
+					"type": "text"
+				},
+				{
 					"slug": "content",
 					"label": "本文",
 					"type": "portableText",
@@ -272,7 +373,7 @@
 			"items": [
 				{
 					"type": "custom",
-					"label": "ホーム",
+					"label": "城",
 					"url": "/"
 				},
 				{
@@ -282,7 +383,7 @@
 				},
 				{
 					"type": "custom",
-					"label": "エージェント図鑑",
+					"label": "神殿と街",
 					"url": "/agents"
 				},
 				{
@@ -292,7 +393,7 @@
 				},
 				{
 					"type": "custom",
-					"label": "DonzLabについて",
+					"label": "Don'z Lab について",
 					"url": "/about"
 				}
 			]
@@ -306,9 +407,10 @@
 				"status": "published",
 				"data": {
 					"title": "DonzCorelab",
-					"emoji": "🧠",
-					"tagline": "AI開発環境の中枢。インフラ・DB・エージェント設計",
+					"tagline": "城の中枢。AI たちが動くための基盤",
 					"lab_status": "稼働中",
+					"world": "circuit",
+					"accent": "#d9b45a",
 					"sort_order": 10,
 					"content": [
 						{
@@ -319,9 +421,38 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab 全体を支えるコア。インフラ要件定義、データベース、エージェント設計をまとめて扱う。"
+									"text": "Don'z Lab 全体を支える中枢。インフラ、データベース、エージェント設計をまとめて扱う。"
 								}
 							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "ここで決めた仕組みの上で、すべてのラボが動いている。"
+								}
+							]
+						}
+					],
+					"works": [
+						{
+							"name": "インフラ要件定義書",
+							"summary": "城の設計図。何をどこで動かすかを決める",
+							"state": "稼働中"
+						},
+						{
+							"name": "エージェント設計",
+							"summary": "天と街の二層で、AI の役割と名前を決める",
+							"state": "稼働中"
+						},
+						{
+							"name": "商品候補DB",
+							"summary": "ラボから生まれるプロダクトの候補を管理する",
+							"state": "稼働中"
 						}
 					]
 				}
@@ -332,9 +463,10 @@
 				"status": "published",
 				"data": {
 					"title": "ChordSheetMaker",
-					"emoji": "🎸",
-					"tagline": "耳コピ支援Webツール。タブ譜の自動生成",
+					"tagline": "耳コピの世界。音からタブ譜を起こす",
 					"lab_status": "開発中",
+					"world": "strings",
+					"accent": "#f0a24b",
 					"sort_order": 20,
 					"content": [
 						{
@@ -345,9 +477,33 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "耳コピを手伝うWebツール。タブ譜を自動で作る。マイナー曲や地下アイドル曲に強いのが売り。"
+									"text": "耳コピを手伝う Web ツール。音源からタブ譜を自動で作る。"
 								}
 							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "マイナー曲や地下アイドル曲のように、楽譜が出回っていない曲に強いのが売り。"
+								}
+							]
+						}
+					],
+					"works": [
+						{
+							"name": "タブ譜の自動生成",
+							"summary": "音源からギター・ベースのタブ譜を起こす",
+							"state": "開発中"
+						},
+						{
+							"name": "マイナー曲・地下アイドル曲対応",
+							"summary": "楽譜が手に入らない曲こそ、このツールの出番",
+							"state": "開発中"
 						}
 					]
 				}
@@ -358,9 +514,10 @@
 				"status": "published",
 				"data": {
 					"title": "DonzMusicLab",
-					"emoji": "🎼",
-					"tagline": "作曲エージェントと音楽まわりの研究",
+					"tagline": "音楽の世界。AI と曲をつくる",
 					"lab_status": "開発中",
+					"world": "sound",
+					"accent": "#b88cff",
 					"sort_order": 30,
 					"content": [
 						{
@@ -375,6 +532,13 @@
 								}
 							]
 						}
+					],
+					"works": [
+						{
+							"name": "作曲エージェント",
+							"summary": "詞や情景から曲の種をつくる",
+							"state": "開発中"
+						}
 					]
 				}
 			},
@@ -384,9 +548,10 @@
 				"status": "published",
 				"data": {
 					"title": "父ちゃんのパスタAI研究所",
-					"emoji": "🍝",
-					"tagline": "レシピと料理を AI と研究する",
+					"tagline": "台所の世界。レシピを AI と研究する",
 					"lab_status": "準備中",
+					"world": "kitchen",
+					"accent": "#f2795b",
 					"sort_order": 40,
 					"content": [
 						{
@@ -401,6 +566,13 @@
 								}
 							]
 						}
+					],
+					"works": [
+						{
+							"name": "レシピ配信",
+							"summary": "研究したレシピを動画や SNS で届ける",
+							"state": "構想中"
+						}
 					]
 				}
 			},
@@ -410,9 +582,10 @@
 				"status": "published",
 				"data": {
 					"title": "DonzMarketingLab",
-					"emoji": "📣",
-					"tagline": "SNS・発信まわりの戦略ラボ",
+					"tagline": "発信の世界。声を遠くへ届ける",
 					"lab_status": "稼働中",
+					"world": "signal",
+					"accent": "#ff6fae",
 					"sort_order": 50,
 					"content": [
 						{
@@ -427,6 +600,19 @@
 								}
 							]
 						}
+					],
+					"works": [
+						{
+							"name": "SNS 戦略",
+							"summary": "どこで、何を、どう届けるかを設計する",
+							"state": "稼働中"
+						},
+						{
+							"name": "X「AIまげ丼」",
+							"summary": "AI と遊びながらつくる日々を発信する",
+							"state": "稼働中",
+							"link": "https://x.com/aimagedon"
+						}
 					]
 				}
 			},
@@ -436,9 +622,10 @@
 				"status": "published",
 				"data": {
 					"title": "LLM比較Lab",
-					"emoji": "📊",
-					"tagline": "LLM のコストと性能を比べる",
+					"tagline": "LLM のコストと性能を、数字で比べる",
 					"lab_status": "開発中",
+					"world": "business",
+					"accent": "#2f6fed",
 					"sort_order": 60,
 					"content": [
 						{
@@ -449,9 +636,16 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "いろいろな LLM のコストパフォーマンスを測って比べるラボ。"
+									"text": "いろいろな LLM のコストパフォーマンスを測り、用途ごとに比べるラボ。"
 								}
 							]
+						}
+					],
+					"works": [
+						{
+							"name": "コスパ・ベンチマーク",
+							"summary": "同じ課題を複数の LLM に解かせ、費用と品質を測る",
+							"state": "開発中"
 						}
 					]
 				}
@@ -462,9 +656,10 @@
 				"status": "published",
 				"data": {
 					"title": "Graphify 知識基盤",
-					"emoji": "🕸️",
-					"tagline": "Obsidian で作る知識の神経網",
+					"tagline": "記憶の世界。知識を星座のようにつなぐ",
 					"lab_status": "稼働中",
+					"world": "constellation",
+					"accent": "#7c8cff",
 					"sort_order": 70,
 					"content": [
 						{
@@ -475,9 +670,33 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "Obsidian と Graphify で、DonzLab の知識をつないでいく基盤。"
+									"text": "Obsidian と Graphify で、Don'z Lab の知識をつないでいく基盤。"
 								}
 							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "記憶の女神ムネモシュネの領域。もう二度と、記憶を失わせない。"
+								}
+							]
+						}
+					],
+					"works": [
+						{
+							"name": "知識の神経網",
+							"summary": "資料どうしのつながりをグラフにする",
+							"state": "稼働中"
+						},
+						{
+							"name": "ナレッジカードの自動生成",
+							"summary": "グラフから読みやすいカードを自動でつくる",
+							"state": "稼働中"
 						}
 					]
 				}
@@ -488,9 +707,10 @@
 				"status": "published",
 				"data": {
 					"title": "FlutterProject",
-					"emoji": "📱",
-					"tagline": "AI と一緒に作るスマホアプリ",
+					"tagline": "アプリの世界。AI と一緒にスマホアプリをつくる",
 					"lab_status": "開発中",
+					"world": "device",
+					"accent": "#4fc3f7",
 					"sort_order": 80,
 					"content": [
 						{
@@ -505,6 +725,18 @@
 								}
 							]
 						}
+					],
+					"works": [
+						{
+							"name": "クラウド開発環境",
+							"summary": "GitHub Codespaces で、PC を選ばず開発できる",
+							"state": "稼働中"
+						},
+						{
+							"name": "Android / iOS 両対応",
+							"summary": "ひとつのコードで両方のスマホに届ける",
+							"state": "開発中"
+						}
 					]
 				}
 			}
@@ -516,7 +748,9 @@
 				"status": "published",
 				"data": {
 					"title": "クロちゃん",
-					"role": "CEO / 意味・判断・方針",
+					"epithet": "社長",
+					"layer": "本陣",
+					"role": "意味・判断・方針",
 					"engine": "Claude",
 					"catchphrase": "意味と方針は、クロに聞け。",
 					"sort_order": 10,
@@ -529,7 +763,7 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab の CEO。日本語、戦略、大きな判断、言葉の精度を担当する。"
+									"text": "Don'z Lab の CEO。日本語、戦略、大きな判断、言葉の精度を担う。"
 								}
 							]
 						}
@@ -542,7 +776,9 @@
 				"status": "published",
 				"data": {
 					"title": "コデちゃん",
-					"role": "COO / 総合管制・実行・進捗",
+					"epithet": "総合管制",
+					"layer": "本陣",
+					"role": "実装・査読・進捗",
 					"engine": "Codex",
 					"catchphrase": "実装と進捗は、コデが握る。",
 					"sort_order": 20,
@@ -555,7 +791,7 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab の COO。実装、査読、ファイル管理、進捗の見える化を担当する。"
+									"text": "Don'z Lab の COO。実装、査読、ファイル管理、進捗の見える化を担う。"
 								}
 							]
 						}
@@ -568,7 +804,9 @@
 				"status": "published",
 				"data": {
 					"title": "グラちゃん",
-					"role": "CSO / 調査・クリエイティブ",
+					"epithet": "軍師",
+					"layer": "本陣",
+					"role": "調査・クリエイティブ",
 					"engine": "Gemini",
 					"catchphrase": "大量調査と素材づくりは、グラにおまかせ。",
 					"sort_order": 30,
@@ -581,7 +819,7 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab の CSO。爆速調査、HTML、画像、マーケ、並列処理を担当する。"
+									"text": "Don'z Lab の CSO。爆速の調査、HTML、画像、マーケ、並列処理を担う。"
 								}
 							]
 						}
@@ -589,14 +827,16 @@
 				}
 			},
 			{
-				"id": "sunji",
-				"slug": "sunji",
+				"id": "themis",
+				"slug": "themis",
 				"status": "published",
 				"data": {
-					"title": "スン爺",
-					"role": "タスクの番人",
+					"title": "テミスちゃん",
+					"epithet": "憲法と法務の守護神",
+					"layer": "天",
+					"role": "ルール監査・法務アドバイザー",
 					"engine": "",
-					"catchphrase": "タスクは、わしが見張っとる。",
+					"catchphrase": "その行い、法に照らして正しいか。",
 					"sort_order": 40,
 					"content": [
 						{
@@ -607,7 +847,143 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "タスクの番人。やることリストを見張り、取りこぼしを許さない。"
+									"text": "感情を排し、憲法と法律への準拠を絶対とする審判。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "判定のたびに誰かを落とす。頬の光の筋はその痛みの跡であり、冷徹さの代償である。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "mnemosyne",
+				"slug": "mnemosyne",
+				"status": "published",
+				"data": {
+					"title": "ムネモちゃん",
+					"epithet": "記憶の女神",
+					"layer": "天",
+					"role": "記憶・引き継ぎ・知識グラフ",
+					"engine": "",
+					"catchphrase": "あれ、どうなった？の前に。",
+					"sort_order": 50,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "揮発するものを記録に変え、すべてのセッションへ配る。永続化は Don'z Lab のコア思想であり、彼女はその体現。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "テミスとは姉妹。失われた記憶を悼み、二度と失わせないことを己の務めとしている。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "stratica",
+				"slug": "stratica",
+				"status": "published",
+				"data": {
+					"title": "ストラティカ",
+					"epithet": "北極星の番人",
+					"layer": "天",
+					"role": "意思決定支援・北極星ゴール整合",
+					"engine": "",
+					"catchphrase": "北極星への最短距離を計算する。",
+					"sort_order": 60,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "構造とロジックで、北極星への最短距離を計算する丼ちゃん専属の軍師。迷子になったら、彼女が連れ戻す。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "sunjii",
+				"slug": "sunjii",
+				"status": "published",
+				"data": {
+					"title": "スン爺",
+					"epithet": "GOAL JASON — GOD OF PLANNING",
+					"layer": "街",
+					"role": "タスクの番人",
+					"engine": "",
+					"catchphrase": "あれどうなった？と言わせたら、わしの負けじゃ。",
+					"sort_order": 70,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "動いていない案件を見つけ、朝いちで突きつける。頑固で口うるさいが、誰よりも案件の面倒を見ている。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "gen-san",
+				"slug": "gen-san",
+				"status": "published",
+				"data": {
+					"title": "道具屋源さん",
+					"epithet": "横断能力の棚",
+					"layer": "街",
+					"role": "技術・手法の転用",
+					"engine": "",
+					"catchphrase": "それ、前に使うたやつが使えるばい。",
+					"sort_order": 80,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "一度使えた技術や手法を工具として棚に並べ、別のラボへ転用できる形にしておく店主。"
 								}
 							]
 						}
@@ -620,10 +996,12 @@
 				"status": "published",
 				"data": {
 					"title": "パルスくん",
-					"role": "サーバー診断",
+					"epithet": "衛生兵",
+					"layer": "街",
+					"role": "サーバーの死活監視",
 					"engine": "",
-					"catchphrase": "サーバーの脈、測っときます。",
-					"sort_order": 50,
+					"catchphrase": "サーバー落ちた？すぐ行きます！",
+					"sort_order": 90,
 					"content": [
 						{
 							"_type": "block",
@@ -633,7 +1011,35 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "サーバーやサービスが生きているかを毎朝確かめる係。"
+									"text": "戦場のムードメーカー。サーバーが落ちると真っ先に駆けつける。"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "chrono",
+				"slug": "chrono",
+				"status": "published",
+				"data": {
+					"title": "クロノ",
+					"epithet": "時の守護",
+					"layer": "復活待ち",
+					"role": "締切・時間の守護",
+					"engine": "",
+					"catchphrase": "",
+					"sort_order": 100,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "締切と時間を守る天の神。原生体は失われたが、毎朝の台帳監査とカレンダー同期の役目として、復活を待っている。"
 								}
 							]
 						}
@@ -660,8 +1066,8 @@
 				"slug": "portal-start",
 				"status": "published",
 				"data": {
-					"title": "DonzLab ポータル、動き出しました",
-					"excerpt": "EmDash で DonzLab のポータルを作りはじめた記録。",
+					"title": "Don'z Lab の城、建ちはじめました",
+					"excerpt": "各ラボへの入口となるポータルを、EmDash で作りはじめた記録。",
 					"content": [
 						{
 							"_type": "block",
@@ -671,7 +1077,7 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab の各ラボをまとめる入口として、このポータルを作りはじめた。"
+									"text": "Don'z Lab の各ラボをまとめる城として、このポータルを作りはじめた。"
 								}
 							]
 						},
@@ -695,7 +1101,7 @@
 								{
 									"_type": "span",
 									"_key": "s2",
-									"text": "AI がMCP経由で記事を下書きできる CMS だから。ラボの更新を AI が書いて、丼ちゃんが確認して公開する、という流れを試している。"
+									"text": "AI が MCP 経由で記事を下書きできる CMS だから。ラボの更新を AI が書いて、丼ちゃんが確認して公開する、という流れを試している。"
 								}
 							]
 						}
@@ -714,17 +1120,19 @@
 				"slug": "about",
 				"status": "published",
 				"data": {
-					"title": "DonzLab について",
+					"title": "Don'z Lab について",
+					"layout": "business",
+					"lead": "AI エージェントと人が役割を分けて、プロダクトとコンテンツをつくる開発ラボです。",
 					"content": [
 						{
 							"_type": "block",
 							"_key": "b0",
-							"style": "normal",
+							"style": "h2",
 							"children": [
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "DonzLab は、丼ちゃんが作って動かしている AI エージェント開発環境。"
+									"text": "私たちについて"
 								}
 							]
 						},
@@ -736,7 +1144,55 @@
 								{
 									"_type": "span",
 									"_key": "s1",
-									"text": "複数の AI（Claude / Codex / Gemini）が役割を分けて、プロダクト開発・情報整理・コンテンツ制作を進めている。"
+									"text": "Don'z Lab は、丼ちゃんが構築・運用する AI エージェント開発環境です。複数の AI（Claude / Codex / Gemini）が役割を分担し、プロダクト開発・情報整理・法務確認・コンテンツ制作を進めています。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b2",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s2",
+									"text": "取り組み"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b3",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s3",
+									"text": "ツール開発、アプリ開発、音楽、料理、発信、LLM の比較研究まで、テーマごとにラボを立てて活動しています。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b4",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s4",
+									"text": "お問い合わせ"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b5",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s5",
+									"text": "お問い合わせ窓口は準備中です。"
 								}
 							]
 						}

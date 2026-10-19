@@ -2,6 +2,7 @@
 import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
 import { Image, PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
+import WorldArt from "../../components/WorldArt.astro";
 import { resolveStarterSiteIdentity } from "../../utils/site-identity";
 
 const slug = decodeSlug(Astro.params.slug);
@@ -17,6 +18,8 @@ const seo = getSeoMeta(agent, {
 	siteUrl: Astro.url.origin,
 	path: Astro.url.pathname.replace(/\/$/, ""),
 });
+const layer = agent.data.layer ?? "街";
+const accent = layer === "街" ? "#e08a4f" : "#d9b45a";
 ---
 
 <Base
@@ -24,35 +27,145 @@ const seo = getSeoMeta(agent, {
 	pageTitle={seo.ogTitle}
 	description={seo.description ?? agent.data.catchphrase}
 	canonical={seo.canonical}
+	image={seo.ogImage}
 	content={{ collection: "agents", id: agent.data.id, slug }}
+	mode="world"
+	accent={accent}
 >
-	<article class="prose">
-		<a class="back-link" href="/agents">← エージェント図鑑</a>
-		{
-			agent.data.portrait && (
-				<div {...agent.edit.portrait}>
-					<Image image={agent.data.portrait} />
-				</div>
-			)
-		}
-		<h1 {...agent.edit.title}>{agent.data.title}</h1>
-		{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
-		{agent.data.catchphrase && <blockquote {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</blockquote>}
-		<PortableText value={agent.data.content} />
-		{agent.data.engine && <p class="meta">中の人: {agent.data.engine}</p>}
-	</article>
+	<section class="shrine" data-layer={layer}>
+		<div class="art">
+			<WorldArt world={layer === "街" ? "kitchen" : "circuit"} accent={accent} seed={agent.id} variant="hero" />
+		</div>
+		<div class="container shrine-inner">
+			<a class="back-link enter" href="/agents">← 神殿と街</a>
+			<div class="portrait enter" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
+				{agent.data.portrait ? <Image image={agent.data.portrait} /> : <span aria-hidden="true">{agent.data.title.slice(0, 1)}</span>}
+			</div>
+			<span class="eyebrow enter enter-2">{layer}</span>
+			{agent.data.epithet && <p class="epithet enter enter-2" {...agent.edit.epithet}>{agent.data.epithet}</p>}
+			<h1 class="enter enter-2" {...agent.edit.title}>{agent.data.title}</h1>
+			{agent.data.catchphrase && <blockquote class="enter enter-3" {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</blockquote>}
+		</div>
+	</section>
+
+	<div class="container profile">
+		<article class="panel prose enter enter-3">
+			<dl>
+				{agent.data.role && (
+					<>
+						<dt>担当</dt>
+						<dd {...agent.edit.role}>{agent.data.role}</dd>
+					</>
+				)}
+				{agent.data.engine && (
+					<>
+						<dt>中の人</dt>
+						<dd>{agent.data.engine}</dd>
+					</>
+				)}
+			</dl>
+			<PortableText value={agent.data.content} />
+		</article>
+	</div>
 </Base>
 
 <style>
-	.role {
-		color: var(--accent-2);
-		font-weight: 700;
+	.shrine {
+		position: relative;
+		overflow: hidden;
+		text-align: center;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.art {
+		position: absolute;
+		inset: 0;
+		opacity: 0.7;
+	}
+
+	.shrine::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at center, rgba(7, 8, 12, 0.2), var(--ink) 80%);
+	}
+
+	.shrine-inner {
+		position: relative;
+		z-index: 1;
+		padding-top: 32px;
+		padding-bottom: 48px;
+	}
+
+	.back-link {
+		display: block;
+		text-align: left;
+		margin-bottom: 24px;
+	}
+
+	.portrait {
+		margin: 0 auto 16px;
+		width: min(56vw, 240px);
+		aspect-ratio: 1;
+		border-radius: 50%;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--accent);
+		background: radial-gradient(circle at 30% 30%, #2a2416, #0b0c12 70%);
+		color: var(--accent);
+		font-family: var(--font-display);
+		font-size: 5rem;
+		box-shadow:
+			0 0 0 8px #07080c,
+			0 0 0 9px color-mix(in srgb, var(--accent) 70%, transparent),
+			0 0 60px color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+
+	.portrait :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.epithet {
+		margin: 0;
+		color: var(--accent);
+		letter-spacing: 0.08em;
+	}
+
+	h1 {
+		margin: 2px 0 8px;
+		font-size: clamp(2.2rem, 7vw, 3.6rem);
 	}
 
 	blockquote {
-		margin: 16px 0;
-		padding-left: 16px;
-		border-left: 3px solid var(--accent);
-		font-size: 1.1rem;
+		margin: 0 auto;
+		max-width: 560px;
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		color: var(--gold-soft);
+	}
+
+	.profile {
+		padding-top: 32px;
+		padding-bottom: 80px;
+		display: flex;
+		justify-content: center;
+	}
+
+	dl {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 4px 16px;
+		margin: 0 0 16px;
+	}
+
+	dt {
+		color: var(--text-muted);
+	}
+
+	dd {
+		margin: 0;
 	}
 </style>

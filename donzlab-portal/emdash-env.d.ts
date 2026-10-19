@@ -10,6 +10,8 @@ export interface Agent {
   slug: string | null;
   status: string;
   title: string;
+  epithet?: string;
+  layer?: "本陣" | "天" | "街" | "復活待ち";
   role?: string;
   engine?: string;
   portrait?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
@@ -29,12 +31,16 @@ export interface Lab {
   slug: string | null;
   status: string;
   title: string;
-  emoji?: string;
   tagline?: string;
   lab_status?: "稼働中" | "開発中" | "準備中";
+  world?: "circuit" | "strings" | "sound" | "kitchen" | "signal" | "constellation" | "device" | "business";
+  accent?: string;
+  thumbnail?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  hero_image?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; caption?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
   lab_url?: string;
   sort_order?: number;
   content?: PortableTextBlock[];
+  works?: { "name": string; "summary"?: string | null; "state"?: "稼働中" | "開発中" | "構想中" | null; "link"?: string | null }[];
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -64,6 +70,8 @@ export interface Page {
   slug: string | null;
   status: string;
   title: string;
+  layout?: "business" | "world";
+  lead?: string;
   content?: PortableTextBlock[];
   createdAt: Date;
   updatedAt: Date;

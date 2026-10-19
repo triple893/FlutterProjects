@@ -1,4 +1,4 @@
-"""Generate seed/seed.json for the DonzLab portal.
+"""Generate seed/seed.json for the Don'z Lab portal.
 
 Run: python3 scripts/build-seed.py
 """
@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+WORLDS = ["circuit", "strings", "sound", "kitchen", "signal", "constellation", "device", "business"]
 
 
 def pt(*paragraphs):
@@ -29,6 +31,10 @@ def title_field(label="タイトル"):
     return {"slug": "title", "label": label, "type": "string", "required": True, "searchable": True}
 
 
+def sort_field():
+    return {"slug": "sort_order", "label": "並び順", "type": "integer", "defaultValue": 100}
+
+
 collections = [
     {
         "slug": "labs",
@@ -38,7 +44,6 @@ collections = [
         "supports": ["drafts", "revisions", "preview", "search", "seo"],
         "fields": [
             title_field("ラボ名"),
-            {"slug": "emoji", "label": "アイコン絵文字", "type": "string"},
             {"slug": "tagline", "label": "ひとこと", "type": "string", "searchable": True},
             {
                 "slug": "lab_status",
@@ -47,9 +52,33 @@ collections = [
                 "defaultValue": "準備中",
                 "validation": {"options": ["稼働中", "開発中", "準備中"]},
             },
-            {"slug": "lab_url", "label": "ラボへのリンク", "type": "url"},
-            {"slug": "sort_order", "label": "並び順", "type": "integer", "defaultValue": 100},
+            {
+                "slug": "world",
+                "label": "世界観（背景グラフィック）",
+                "type": "select",
+                "defaultValue": "circuit",
+                "validation": {"options": WORLDS},
+            },
+            {"slug": "accent", "label": "テーマカラー（#rrggbb）", "type": "string"},
+            {"slug": "thumbnail", "label": "サムネイル画像", "type": "image"},
+            {"slug": "hero_image", "label": "メインビジュアル", "type": "image"},
+            {"slug": "lab_url", "label": "ラボの外部リンク", "type": "url"},
+            sort_field(),
             {"slug": "content", "label": "紹介文", "type": "portableText", "searchable": True},
+            {
+                "slug": "works",
+                "label": "この世界でやっていること",
+                "type": "repeater",
+                "validation": {
+                    "maxItems": 12,
+                    "subFields": [
+                        {"slug": "name", "label": "名前", "type": "string", "required": True},
+                        {"slug": "summary", "label": "説明", "type": "text"},
+                        {"slug": "state", "label": "状態", "type": "select", "options": ["稼働中", "開発中", "構想中"]},
+                        {"slug": "link", "label": "リンク", "type": "url"},
+                    ],
+                },
+            },
         ],
     },
     {
@@ -60,11 +89,19 @@ collections = [
         "supports": ["drafts", "revisions", "preview", "search", "seo"],
         "fields": [
             title_field("名前"),
-            {"slug": "role", "label": "役職・役割", "type": "string", "searchable": True},
+            {"slug": "epithet", "label": "二つ名", "type": "string", "searchable": True},
+            {
+                "slug": "layer",
+                "label": "所属",
+                "type": "select",
+                "defaultValue": "街",
+                "validation": {"options": ["本陣", "天", "街", "復活待ち"]},
+            },
+            {"slug": "role", "label": "担当", "type": "string", "searchable": True},
             {"slug": "engine", "label": "中の人（AI）", "type": "string"},
-            {"slug": "portrait", "label": "立ち絵", "type": "image"},
-            {"slug": "catchphrase", "label": "キャッチコピー", "type": "string", "searchable": True},
-            {"slug": "sort_order", "label": "並び順", "type": "integer", "defaultValue": 100},
+            {"slug": "portrait", "label": "肖像画", "type": "image"},
+            {"slug": "catchphrase", "label": "ひとこと", "type": "string", "searchable": True},
+            sort_field(),
             {"slug": "content", "label": "プロフィール", "type": "portableText", "searchable": True},
         ],
     },
@@ -95,7 +132,7 @@ collections = [
                 "type": "select",
                 "validation": {"options": ["X", "YouTube", "TikTok", "note", "GitHub", "その他"]},
             },
-            {"slug": "sort_order", "label": "並び順", "type": "integer", "defaultValue": 100},
+            sort_field(),
         ],
     },
     {
@@ -106,41 +143,88 @@ collections = [
         "supports": ["drafts", "revisions", "preview", "search", "seo"],
         "fields": [
             title_field(),
+            {
+                "slug": "layout",
+                "label": "レイアウト",
+                "type": "select",
+                "defaultValue": "business",
+                "validation": {"options": ["business", "world"]},
+            },
+            {"slug": "lead", "label": "リード文", "type": "text"},
             {"slug": "content", "label": "本文", "type": "portableText", "searchable": True},
         ],
     },
 ]
 
+
+def work(name, summary, state, link=None):
+    row = {"name": name, "summary": summary, "state": state}
+    if link:
+        row["link"] = link
+    return row
+
+
+# slug, name, tagline, status, world, accent, order, intro paragraphs, works
 labs = [
-    ("donz-corelab", "🧠", "DonzCorelab", "AI開発環境の中枢。インフラ・DB・エージェント設計", "稼働中", 10,
-     ["DonzLab 全体を支えるコア。インフラ要件定義、データベース、エージェント設計をまとめて扱う。"]),
-    ("chord-sheet-maker", "🎸", "ChordSheetMaker", "耳コピ支援Webツール。タブ譜の自動生成", "開発中", 20,
-     ["耳コピを手伝うWebツール。タブ譜を自動で作る。マイナー曲や地下アイドル曲に強いのが売り。"]),
-    ("donz-music-lab", "🎼", "DonzMusicLab", "作曲エージェントと音楽まわりの研究", "開発中", 30,
-     ["作曲エージェントを中心に、音楽づくりを AI と進めるラボ。"]),
-    ("pasta-lab", "🍝", "父ちゃんのパスタAI研究所", "レシピと料理を AI と研究する", "準備中", 40,
-     ["料理とレシピ配信を AI と一緒に研究するラボ。"]),
-    ("donz-marketing-lab", "📣", "DonzMarketingLab", "SNS・発信まわりの戦略ラボ", "稼働中", 50,
-     ["X・YouTube・TikTok などの発信を、AI と組んで設計・検証するラボ。"]),
-    ("llm-cost-lab", "📊", "LLM比較Lab", "LLM のコストと性能を比べる", "開発中", 60,
-     ["いろいろな LLM のコストパフォーマンスを測って比べるラボ。"]),
-    ("knowledge-graph", "🕸️", "Graphify 知識基盤", "Obsidian で作る知識の神経網", "稼働中", 70,
-     ["Obsidian と Graphify で、DonzLab の知識をつないでいく基盤。"]),
-    ("flutter-project", "📱", "FlutterProject", "AI と一緒に作るスマホアプリ", "開発中", 80,
-     ["Flutter で Android / iOS 両対応のアプリを AI と一緒に作るプロジェクト。"]),
+    ("donz-corelab", "DonzCorelab", "城の中枢。AI たちが動くための基盤", "稼働中", "circuit", "#d9b45a", 10,
+     ["Don'z Lab 全体を支える中枢。インフラ、データベース、エージェント設計をまとめて扱う。",
+      "ここで決めた仕組みの上で、すべてのラボが動いている。"],
+     [work("インフラ要件定義書", "城の設計図。何をどこで動かすかを決める", "稼働中"),
+      work("エージェント設計", "天と街の二層で、AI の役割と名前を決める", "稼働中"),
+      work("商品候補DB", "ラボから生まれるプロダクトの候補を管理する", "稼働中")]),
+    ("chord-sheet-maker", "ChordSheetMaker", "耳コピの世界。音からタブ譜を起こす", "開発中", "strings", "#f0a24b", 20,
+     ["耳コピを手伝う Web ツール。音源からタブ譜を自動で作る。",
+      "マイナー曲や地下アイドル曲のように、楽譜が出回っていない曲に強いのが売り。"],
+     [work("タブ譜の自動生成", "音源からギター・ベースのタブ譜を起こす", "開発中"),
+      work("マイナー曲・地下アイドル曲対応", "楽譜が手に入らない曲こそ、このツールの出番", "開発中")]),
+    ("donz-music-lab", "DonzMusicLab", "音楽の世界。AI と曲をつくる", "開発中", "sound", "#b88cff", 30,
+     ["作曲エージェントを中心に、音楽づくりを AI と進めるラボ。"],
+     [work("作曲エージェント", "詞や情景から曲の種をつくる", "開発中")]),
+    ("pasta-lab", "父ちゃんのパスタAI研究所", "台所の世界。レシピを AI と研究する", "準備中", "kitchen", "#f2795b", 40,
+     ["料理とレシピ配信を AI と一緒に研究するラボ。"],
+     [work("レシピ配信", "研究したレシピを動画や SNS で届ける", "構想中")]),
+    ("donz-marketing-lab", "DonzMarketingLab", "発信の世界。声を遠くへ届ける", "稼働中", "signal", "#ff6fae", 50,
+     ["X・YouTube・TikTok などの発信を、AI と組んで設計・検証するラボ。"],
+     [work("SNS 戦略", "どこで、何を、どう届けるかを設計する", "稼働中"),
+      work("X「AIまげ丼」", "AI と遊びながらつくる日々を発信する", "稼働中", "https://x.com/aimagedon")]),
+    ("llm-cost-lab", "LLM比較Lab", "LLM のコストと性能を、数字で比べる", "開発中", "business", "#2f6fed", 60,
+     ["いろいろな LLM のコストパフォーマンスを測り、用途ごとに比べるラボ。"],
+     [work("コスパ・ベンチマーク", "同じ課題を複数の LLM に解かせ、費用と品質を測る", "開発中")]),
+    ("knowledge-graph", "Graphify 知識基盤", "記憶の世界。知識を星座のようにつなぐ", "稼働中", "constellation", "#7c8cff", 70,
+     ["Obsidian と Graphify で、Don'z Lab の知識をつないでいく基盤。",
+      "記憶の女神ムネモシュネの領域。もう二度と、記憶を失わせない。"],
+     [work("知識の神経網", "資料どうしのつながりをグラフにする", "稼働中"),
+      work("ナレッジカードの自動生成", "グラフから読みやすいカードを自動でつくる", "稼働中")]),
+    ("flutter-project", "FlutterProject", "アプリの世界。AI と一緒にスマホアプリをつくる", "開発中", "device", "#4fc3f7", 80,
+     ["Flutter で Android / iOS 両対応のアプリを AI と一緒に作るプロジェクト。"],
+     [work("クラウド開発環境", "GitHub Codespaces で、PC を選ばず開発できる", "稼働中"),
+      work("Android / iOS 両対応", "ひとつのコードで両方のスマホに届ける", "開発中")]),
 ]
 
+# slug, name, epithet, layer, role, engine, catchphrase, order, profile paragraphs
 agents = [
-    ("kuro", "クロちゃん", "CEO / 意味・判断・方針", "Claude", "意味と方針は、クロに聞け。", 10,
-     ["DonzLab の CEO。日本語、戦略、大きな判断、言葉の精度を担当する。"]),
-    ("kode", "コデちゃん", "COO / 総合管制・実行・進捗", "Codex", "実装と進捗は、コデが握る。", 20,
-     ["DonzLab の COO。実装、査読、ファイル管理、進捗の見える化を担当する。"]),
-    ("gura", "グラちゃん", "CSO / 調査・クリエイティブ", "Gemini", "大量調査と素材づくりは、グラにおまかせ。", 30,
-     ["DonzLab の CSO。爆速調査、HTML、画像、マーケ、並列処理を担当する。"]),
-    ("sunji", "スン爺", "タスクの番人", "", "タスクは、わしが見張っとる。", 40,
-     ["タスクの番人。やることリストを見張り、取りこぼしを許さない。"]),
-    ("pulse", "パルスくん", "サーバー診断", "", "サーバーの脈、測っときます。", 50,
-     ["サーバーやサービスが生きているかを毎朝確かめる係。"]),
+    ("kuro", "クロちゃん", "社長", "本陣", "意味・判断・方針", "Claude", "意味と方針は、クロに聞け。", 10,
+     ["Don'z Lab の CEO。日本語、戦略、大きな判断、言葉の精度を担う。"]),
+    ("kode", "コデちゃん", "総合管制", "本陣", "実装・査読・進捗", "Codex", "実装と進捗は、コデが握る。", 20,
+     ["Don'z Lab の COO。実装、査読、ファイル管理、進捗の見える化を担う。"]),
+    ("gura", "グラちゃん", "軍師", "本陣", "調査・クリエイティブ", "Gemini", "大量調査と素材づくりは、グラにおまかせ。", 30,
+     ["Don'z Lab の CSO。爆速の調査、HTML、画像、マーケ、並列処理を担う。"]),
+    ("themis", "テミスちゃん", "憲法と法務の守護神", "天", "ルール監査・法務アドバイザー", "", "その行い、法に照らして正しいか。", 40,
+     ["感情を排し、憲法と法律への準拠を絶対とする審判。",
+      "判定のたびに誰かを落とす。頬の光の筋はその痛みの跡であり、冷徹さの代償である。"]),
+    ("mnemosyne", "ムネモちゃん", "記憶の女神", "天", "記憶・引き継ぎ・知識グラフ", "", "あれ、どうなった？の前に。", 50,
+     ["揮発するものを記録に変え、すべてのセッションへ配る。永続化は Don'z Lab のコア思想であり、彼女はその体現。",
+      "テミスとは姉妹。失われた記憶を悼み、二度と失わせないことを己の務めとしている。"]),
+    ("stratica", "ストラティカ", "北極星の番人", "天", "意思決定支援・北極星ゴール整合", "", "北極星への最短距離を計算する。", 60,
+     ["構造とロジックで、北極星への最短距離を計算する丼ちゃん専属の軍師。迷子になったら、彼女が連れ戻す。"]),
+    ("sunjii", "スン爺", "GOAL JASON — GOD OF PLANNING", "街", "タスクの番人", "", "あれどうなった？と言わせたら、わしの負けじゃ。", 70,
+     ["動いていない案件を見つけ、朝いちで突きつける。頑固で口うるさいが、誰よりも案件の面倒を見ている。"]),
+    ("gen-san", "道具屋源さん", "横断能力の棚", "街", "技術・手法の転用", "", "それ、前に使うたやつが使えるばい。", 80,
+     ["一度使えた技術や手法を工具として棚に並べ、別のラボへ転用できる形にしておく店主。"]),
+    ("pulse", "パルスくん", "衛生兵", "街", "サーバーの死活監視", "", "サーバー落ちた？すぐ行きます！", 90,
+     ["戦場のムードメーカー。サーバーが落ちると真っ先に駆けつける。"]),
+    ("chrono", "クロノ", "時の守護", "復活待ち", "締切・時間の守護", "", "", 100,
+     ["締切と時間を守る天の神。原生体は失われたが、毎朝の台帳監査とカレンダー同期の役目として、復活を待っている。"]),
 ]
 
 links = [
@@ -148,35 +232,40 @@ links = [
 ]
 
 
-def entries(rows, builder):
-    return [builder(*r) for r in rows]
-
-
 content = {
-    "labs": entries(labs, lambda slug, emoji, name, tagline, status, order, body: {
-        "id": slug, "slug": slug, "status": "published",
-        "data": {"title": name, "emoji": emoji, "tagline": tagline, "lab_status": status,
-                 "sort_order": order, "content": pt(*body)},
-    }),
-    "agents": entries(agents, lambda slug, name, role, engine, catch, order, body: {
-        "id": slug, "slug": slug, "status": "published",
-        "data": {"title": name, "role": role, "engine": engine, "catchphrase": catch,
-                 "sort_order": order, "content": pt(*body)},
-    }),
-    "links": entries(links, lambda slug, name, url, platform, order: {
-        "id": slug, "slug": slug, "status": "published",
-        "data": {"title": name, "link_url": url, "platform": platform, "sort_order": order},
-    }),
+    "labs": [
+        {
+            "id": slug, "slug": slug, "status": "published",
+            "data": {"title": name, "tagline": tagline, "lab_status": status, "world": world, "accent": accent,
+                     "sort_order": order, "content": pt(*intro), "works": works},
+        }
+        for slug, name, tagline, status, world, accent, order, intro, works in labs
+    ],
+    "agents": [
+        {
+            "id": slug, "slug": slug, "status": "published",
+            "data": {"title": name, "epithet": epithet, "layer": layer, "role": role, "engine": engine,
+                     "catchphrase": catch, "sort_order": order, "content": pt(*profile)},
+        }
+        for slug, name, epithet, layer, role, engine, catch, order, profile in agents
+    ],
+    "links": [
+        {
+            "id": slug, "slug": slug, "status": "published",
+            "data": {"title": name, "link_url": url, "platform": platform, "sort_order": order},
+        }
+        for slug, name, url, platform, order in links
+    ],
     "posts": [
         {
             "id": "portal-start", "slug": "portal-start", "status": "published",
             "data": {
-                "title": "DonzLab ポータル、動き出しました",
-                "excerpt": "EmDash で DonzLab のポータルを作りはじめた記録。",
+                "title": "Don'z Lab の城、建ちはじめました",
+                "excerpt": "各ラボへの入口となるポータルを、EmDash で作りはじめた記録。",
                 "content": pt(
-                    "DonzLab の各ラボをまとめる入口として、このポータルを作りはじめた。",
+                    "Don'z Lab の各ラボをまとめる城として、このポータルを作りはじめた。",
                     ("h2", "なぜ EmDash？"),
-                    "AI がMCP経由で記事を下書きできる CMS だから。ラボの更新を AI が書いて、丼ちゃんが確認して公開する、という流れを試している。",
+                    "AI が MCP 経由で記事を下書きできる CMS だから。ラボの更新を AI が書いて、丼ちゃんが確認して公開する、という流れを試している。",
                 ),
             },
             "taxonomies": {"category": ["devlog"]},
@@ -186,10 +275,16 @@ content = {
         {
             "id": "about", "slug": "about", "status": "published",
             "data": {
-                "title": "DonzLab について",
+                "title": "Don'z Lab について",
+                "layout": "business",
+                "lead": "AI エージェントと人が役割を分けて、プロダクトとコンテンツをつくる開発ラボです。",
                 "content": pt(
-                    "DonzLab は、丼ちゃんが作って動かしている AI エージェント開発環境。",
-                    "複数の AI（Claude / Codex / Gemini）が役割を分けて、プロダクト開発・情報整理・コンテンツ制作を進めている。",
+                    ("h2", "私たちについて"),
+                    "Don'z Lab は、丼ちゃんが構築・運用する AI エージェント開発環境です。複数の AI（Claude / Codex / Gemini）が役割を分担し、プロダクト開発・情報整理・法務確認・コンテンツ制作を進めています。",
+                    ("h2", "取り組み"),
+                    "ツール開発、アプリ開発、音楽、料理、発信、LLM の比較研究まで、テーマごとにラボを立てて活動しています。",
+                    ("h2", "お問い合わせ"),
+                    "お問い合わせ窓口は準備中です。",
                 ),
             },
         }
@@ -199,8 +294,8 @@ content = {
 seed = {
     "$schema": "https://emdashcms.com/seed.schema.json",
     "version": "1",
-    "meta": {"name": "DonzLab Portal", "description": "DonzLab の各ラボへの入口となるポータル", "author": "DonzLab"},
-    "settings": {"title": "DonzLab", "tagline": "AI と一緒に、つくって、ためす。"},
+    "meta": {"name": "Don'z Lab Portal", "description": "Don'z Lab の各ラボへの入口となる城", "author": "Don'z Lab"},
+    "settings": {"title": "Don'z Lab", "tagline": "AI と一緒に、つくって、ためす。"},
     "collections": collections,
     "taxonomies": [
         {
@@ -213,11 +308,11 @@ seed = {
         {
             "name": "primary", "label": "メインメニュー",
             "items": [
-                {"type": "custom", "label": "ホーム", "url": "/"},
+                {"type": "custom", "label": "城", "url": "/"},
                 {"type": "custom", "label": "ラボ", "url": "/labs"},
-                {"type": "custom", "label": "エージェント図鑑", "url": "/agents"},
+                {"type": "custom", "label": "神殿と街", "url": "/agents"},
                 {"type": "custom", "label": "開発日記", "url": "/posts"},
-                {"type": "custom", "label": "DonzLabについて", "url": "/about"},
+                {"type": "custom", "label": "Don'z Lab について", "url": "/about"},
             ],
         }
     ],

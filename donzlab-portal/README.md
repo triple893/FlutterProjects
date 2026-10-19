@@ -1,19 +1,32 @@
-# DonzLab ポータル
+# Don'z Lab ポータル（Donz-Lab.com）
 
-DonzLab の各ラボ・エージェント図鑑・開発日記・活動リンクをまとめる入口サイト。
+Don'z Lab の「城」。ラボの門（カード）をくぐると、各ラボの世界に入っていく入口サイト。
 [EmDash](https://github.com/emdash-cms/emdash)（Astro ベースの CMS）で作っていて、AI が MCP 経由で記事を下書きできる。
 
 > 現在は **PoC（お試し版）・非公開**。検証結果は [`../docs/EMDASH_POC_RESULT.md`](../docs/EMDASH_POC_RESULT.md)。
+
+## デザインの考え方
+
+| モード | 使う場所 | 見た目 |
+| --- | --- | --- |
+| `castle`（城） | トップ、ラボの門、神殿と街、開発日記 | 黒地に金の回路紋様・光輪（天の意匠ルール） |
+| `world`（世界） | 各ラボの中、エージェントの詳細 | ラボごとの世界グラフィックとテーマカラーで、全画面を使って没入させる |
+| `business`（ビジネス） | `world: business` のラボ、`layout: business` の固定ページ | 白基調のクリーンな構造。アニメーションなし |
+
+- 世界グラフィックは `src/components/WorldArt.astro`（SVG とアニメーション）。`circuit` / `strings` / `sound` / `kitchen` / `signal` / `constellation` / `device` / `business`
+- ラボに `thumbnail`（サムネイル）や `hero_image`（メインビジュアル）の画像を入れると、グラフィックの代わりにその画像が出る
+- 門からラボへの移動は、ブラウザのページ遷移アニメーション（View Transitions）でつながる
+- 「動きを減らす」設定の人には、アニメーションを止める
 
 ## 構成
 
 | 区分 | コレクション | URL |
 | --- | --- | --- |
-| ラボ | `labs`（名前・絵文字・ひとこと・ステータス・リンク・並び順・紹介文） | `/labs`、`/labs/{slug}` |
-| エージェント図鑑 | `agents`（名前・役割・中の人・立ち絵・キャッチコピー・プロフィール） | `/agents`、`/agents/{slug}` |
+| ラボ | `labs`（ひとこと・ステータス・世界観・テーマカラー・サムネイル・メインビジュアル・紹介文・この世界でやっていること） | `/labs`、`/labs/{slug}` |
+| 神殿と街 | `agents`（二つ名・所属〈本陣/天/街/復活待ち〉・担当・中の人・肖像画・ひとこと・プロフィール） | `/agents`、`/agents/{slug}` |
 | 開発日記 | `posts`（カテゴリ: 開発日記 / リリース） | `/posts`、`/posts/{slug}` |
 | 活動リンク | `links`（X・YouTube・TikTok など） | トップページに表示 |
-| 固定ページ | `pages` | `/{slug}`（例: `/about`） |
+| 固定ページ | `pages`（レイアウト〈business/world〉・リード文） | `/{slug}`（例: `/about`） |
 
 スキーマと初期データは `seed/seed.json`。直接編集せず `python3 scripts/build-seed.py` で作り直す。
 

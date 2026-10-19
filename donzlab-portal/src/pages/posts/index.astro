@@ -17,37 +17,44 @@ const {
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 ---
 
-<Base title="開発日記" description="DonzLab の開発の記録">
-	<p class="eyebrow">Devlog</p>
-	<h1>開発日記</h1>
+<Base title="開発日記" description="Don'z Lab の開発の記録">
+	<div class="container page">
+		<p class="eyebrow">Devlog</p>
+		<h1>開発日記</h1>
 
-	{
-		posts.length === 0 ? (
-			<p class="meta">まだ日記はありません。</p>
-		) : (
-			<div class="grid">
-				{posts.map((post) => (
-					<a class="card" href={`/posts/${post.id}`}>
-						{post.data.featured_image && (
-							<div {...post.edit.featured_image}>
-								<Image image={post.data.featured_image} />
-							</div>
-						)}
-						<span class="meta">{formatDate(post.data.publishedAt)}</span>
-						<h3 {...post.edit.title}>{post.data.title}</h3>
-						{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
-					</a>
-				))}
-			</div>
-		)
-	}
-	<nav class="pager" aria-label="ページ送り">
-		{cursor && <a href="/posts">最初のページ</a>}
-		{nextCursor && <a href={`/posts?cursor=${encodeURIComponent(nextCursor)}`}>次のページ →</a>}
-	</nav>
+		{
+			posts.length === 0 ? (
+				<p class="meta">まだ日記はありません。</p>
+			) : (
+				<div class="grid">
+					{posts.map((post) => (
+						<a class="panel" href={`/posts/${post.id}`}>
+							{post.data.featured_image && (
+								<div {...post.edit.featured_image}>
+									<Image image={post.data.featured_image} />
+								</div>
+							)}
+							<span class="meta">{formatDate(post.data.publishedAt)}</span>
+							<h3 {...post.edit.title}>{post.data.title}</h3>
+							{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+						</a>
+					))}
+				</div>
+			)
+		}
+		<nav class="pager" aria-label="ページ送り">
+			{cursor && <a href="/posts">最初のページ</a>}
+			{nextCursor && <a href={`/posts?cursor=${encodeURIComponent(nextCursor)}`}>次のページ →</a>}
+		</nav>
+	</div>
 </Base>
 
 <style>
+	.page {
+		padding-top: 48px;
+		padding-bottom: 80px;
+	}
+
 	.pager {
 		display: flex;
 		gap: 16px;

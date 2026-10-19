@@ -9,10 +9,25 @@ if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 const labs = [...entries].sort(bySortOrder);
 ---
 
-<Base title="ラボ一覧" description="DonzLab の各ラボへの入口">
-	<p class="eyebrow">Labs</p>
-	<h1>ラボ一覧</h1>
-	<div class="grid">
-		{labs.map((lab) => <LabCard lab={lab} />)}
+<Base title="ラボの門" description="Don'z Lab の各ラボへの入口">
+	<div class="container page">
+		<span class="eyebrow enter">Gates</span>
+		<h1 class="enter enter-2">ラボの門</h1>
+		<p class="meta enter enter-2">門をくぐると、そのラボの世界に入ります。</p>
+		<div class="grid gates enter enter-3">
+			{labs.map((lab) => <LabCard lab={lab} />)}
+		</div>
 	</div>
 </Base>
+
+<style>
+	.page {
+		padding-top: 48px;
+		padding-bottom: 80px;
+	}
+
+	.gates {
+		margin-top: 24px;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+	}
+</style>

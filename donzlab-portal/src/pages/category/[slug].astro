@@ -35,37 +35,46 @@ if (Astro.cache?.enabled) {
 ---
 
 <Base title={`${term.label}の日記`} description={`${term.label}の開発日記`}>
-	<h1>{term.label}</h1>
+	<div class="container page">
+		<h1>{term.label}</h1>
 
-	{
-		posts.length === 0 ? (
-			<p>このカテゴリの日記はまだありません。</p>
-		) : (
-			<ul>
-				{posts.map((post) => (
-					<li>
-						<a href={`/posts/${post.id}`}>
-							{post.data.featured_image && (
-								<div {...post.edit.featured_image}><Image image={post.data.featured_image} /></div>
-							)}
-							<h2 {...post.edit.title}>{post.data.title}</h2>
-						</a>
-						{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
-					</li>
-				))}
-			</ul>
-		)
-	}
-	<nav aria-label="ページ送り">
-		{cursor && <a href={`/category/${term.slug}`}>最初のページ</a>}
 		{
-			nextCursor && (
-				<a
-					href={`/category/${term.slug}?cursor=${encodeURIComponent(nextCursor)}`}
-				>
-					次のページ →
-				</a>
+			posts.length === 0 ? (
+				<p>このカテゴリの日記はまだありません。</p>
+			) : (
+				<ul>
+					{posts.map((post) => (
+						<li>
+							<a href={`/posts/${post.id}`}>
+								{post.data.featured_image && (
+									<div {...post.edit.featured_image}><Image image={post.data.featured_image} /></div>
+								)}
+								<h2 {...post.edit.title}>{post.data.title}</h2>
+							</a>
+							{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+						</li>
+					))}
+				</ul>
 			)
 		}
-	</nav>
+		<nav aria-label="ページ送り">
+			{cursor && <a href={`/category/${term.slug}`}>最初のページ</a>}
+			{
+				nextCursor && (
+					<a
+						href={`/category/${term.slug}?cursor=${encodeURIComponent(nextCursor)}`}
+					>
+						次のページ →
+					</a>
+				)
+			}
+		</nav>
+	</div>
 </Base>
+
+<style>
+	.page {
+		padding-top: 48px;
+		padding-bottom: 80px;
+	}
+</style>

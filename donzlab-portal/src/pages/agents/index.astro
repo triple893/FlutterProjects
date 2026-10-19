@@ -2,18 +2,104 @@
 import { getEmDashCollection } from "emdash";
 import Base from "../../layouts/Base.astro";
 import AgentCard from "../../components/AgentCard.astro";
+import WorldArt from "../../components/WorldArt.astro";
 import { bySortOrder } from "../../utils/format";
 
 const { entries, cacheHint } = await getEmDashCollection("agents", { limit: 200 });
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 const agents = [...entries].sort(bySortOrder);
+
+const groups = [
+	{ layer: "本陣", eyebrow: "Headquarters", title: "本陣", lead: "丼ちゃんの両腕として、城全体を動かす三人。" },
+	{ layer: "天", eyebrow: "The Temple", title: "天 — 神殿", lead: "すべてのラボに共通する、常設の法。ギリシャ神話の神々の名を持つ。" },
+	{ layer: "街", eyebrow: "The Town", title: "街 — 職人ギルド", lead: "ラボごとの実務を担う、和の職人と商人たち。" },
+	{ layer: "復活待ち", eyebrow: "Awaiting Return", title: "復活待ち", lead: "失われ、帰りを待っている者たち。" },
+]
+	.map((g) => ({ ...g, members: agents.filter((a) => (a.data.layer ?? "街") === g.layer) }))
+	.filter((g) => g.members.length > 0);
 ---
 
-<Base title="エージェント図鑑" description="DonzLab で働く AI エージェントたち">
-	<p class="eyebrow">Agents</p>
-	<h1>エージェント図鑑</h1>
-	<p class="meta">DonzLab で働く AI エージェントたち。</p>
-	<div class="grid">
-		{agents.map((agent) => <AgentCard agent={agent} />)}
+<Base title="神殿と街" description="Don'z Lab で働く AI エージェントたち">
+	<section class="temple-hero">
+		<div class="art">
+			<WorldArt world="constellation" accent="#d9b45a" seed="temple" variant="hero" />
+		</div>
+		<div class="container hero-text">
+			<span class="eyebrow enter">Agent Codex</span>
+			<h1 class="enter enter-2">神殿と街</h1>
+			<p class="enter enter-3">天には法が、街には職人が。Don'z Lab で働く AI エージェントたちの図鑑。</p>
+		</div>
+	</section>
+
+	<div class="container codex">
+		{
+			groups.map((g) => (
+				<section class="section" data-layer={g.layer}>
+					<span class="eyebrow">{g.eyebrow}</span>
+					<h2>{g.title}</h2>
+					<p class="meta">{g.lead}</p>
+					<div class="grid">
+						{g.members.map((agent) => (
+							<AgentCard agent={agent} />
+						))}
+					</div>
+				</section>
+			))
+		}
 	</div>
 </Base>
+
+<style>
+	.temple-hero {
+		position: relative;
+		min-height: 46vh;
+		display: flex;
+		align-items: flex-end;
+		overflow: hidden;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.art {
+		position: absolute;
+		inset: 0;
+	}
+
+	.temple-hero::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(7, 8, 12, 0.1), var(--ink));
+	}
+
+	.hero-text {
+		position: relative;
+		z-index: 1;
+		padding-bottom: 32px;
+	}
+
+	.hero-text h1 {
+		margin: 4px 0;
+		font-size: clamp(2.2rem, 7vw, 4rem);
+	}
+
+	.hero-text p {
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	.codex {
+		padding-bottom: 80px;
+	}
+
+	.section h2 {
+		margin: 2px 0 4px;
+	}
+
+	.section .grid {
+		margin-top: 18px;
+	}
+
+	[data-layer="街"] .eyebrow {
+		color: #e08a4f;
+	}
+</style>

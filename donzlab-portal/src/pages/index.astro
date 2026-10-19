@@ -3,6 +3,7 @@ import { getEmDashCollection, getSiteSettings } from "emdash";
 import Base from "../layouts/Base.astro";
 import LabCard from "../components/LabCard.astro";
 import AgentCard from "../components/AgentCard.astro";
+import WorldArt from "../components/WorldArt.astro";
 import { resolveStarterSiteIdentity } from "../utils/site-identity";
 import { bySortOrder, formatDate } from "../utils/format";
 
@@ -18,117 +19,239 @@ if (Astro.cache?.enabled) {
 }
 
 const labs = [...labsResult.entries].sort(bySortOrder);
-const agents = [...agentsResult.entries].sort(bySortOrder).slice(0, 4);
+const agents = [...agentsResult.entries]
+	.filter((a) => a.data.layer === "本陣" || a.data.layer === "天")
+	.sort(bySortOrder)
+	.slice(0, 6);
 const posts = postsResult.entries;
 const links = [...linksResult.entries].sort(bySortOrder);
 const { siteTitle, siteTagline } = resolveStarterSiteIdentity(settings);
 ---
 
-<Base title={siteTitle} description={siteTagline}>
-	<section class="hero">
-		<p class="eyebrow">AI Agent Development Lab</p>
-		<h1>Donz<span>Lab</span></h1>
-		<p class="lead">{siteTagline}</p>
-		<p class="sub">
-			複数の AI が役割を分けて動く、丼ちゃんの開発環境。<br />
-			各ラボへの入口はここから。
-		</p>
-	</section>
-
-	<section class="section">
-		<div class="section-head">
-			<h2>ラボ</h2>
-			<a href="/labs">すべて見る →</a>
+<Base title={siteTitle} description={siteTagline} mode="castle">
+	<section class="hero" data-parallax>
+		<div class="hero-art">
+			<WorldArt world="circuit" seed="castle" variant="hero" />
 		</div>
-		<div class="grid">
-			{labs.map((lab) => <LabCard lab={lab} />)}
+		<div class="halo" aria-hidden="true"></div>
+		<div class="container hero-inner">
+			<span class="eyebrow enter">Our Castle</span>
+			<h1 class="crest enter enter-2">Don'z Lab</h1>
+			<p class="motto enter enter-3">{siteTagline}</p>
+			<p class="intro enter enter-3">
+				AI たちが役割を分けて動く、丼ちゃんの城。<br />
+				門をくぐって、それぞれのラボの世界へ。
+			</p>
+			<a class="cta enter enter-3" href="#gates">ラボの門へ ↓</a>
 		</div>
 	</section>
 
-	<section class="section">
-		<div class="section-head">
-			<h2>エージェント図鑑</h2>
-			<a href="/agents">すべて見る →</a>
-		</div>
-		<div class="grid">
-			{agents.map((agent) => <AgentCard agent={agent} />)}
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="section-head">
-			<h2>開発日記</h2>
-			<a href="/posts">すべて見る →</a>
-		</div>
-		{
-			posts.length === 0 ? (
-				<p class="meta">まだ日記はありません。</p>
-			) : (
-				<div class="grid">
-					{posts.map((post) => (
-						<a class="card" href={`/posts/${post.id}`}>
-							<span class="meta">{formatDate(post.data.publishedAt)}</span>
-							<h3 {...post.edit.title}>{post.data.title}</h3>
-							{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
-						</a>
-					))}
+	<div class="container">
+		<section class="section" id="gates">
+			<div class="section-head">
+				<div>
+					<span class="eyebrow">Gates</span>
+					<h2>ラボの門</h2>
 				</div>
+				<a href="/labs">すべての門 →</a>
+			</div>
+			<div class="grid gates">
+				{labs.map((lab) => <LabCard lab={lab} />)}
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="section-head">
+				<div>
+					<span class="eyebrow">Temple &amp; Town</span>
+					<h2>神殿と街</h2>
+				</div>
+				<a href="/agents">エージェント図鑑 →</a>
+			</div>
+			<div class="grid">
+				{agents.map((agent) => <AgentCard agent={agent} />)}
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="section-head">
+				<div>
+					<span class="eyebrow">Chronicle</span>
+					<h2>開発日記</h2>
+				</div>
+				<a href="/posts">すべて読む →</a>
+			</div>
+			{
+				posts.length === 0 ? (
+					<p class="meta">まだ日記はありません。</p>
+				) : (
+					<div class="grid">
+						{posts.map((post) => (
+							<a class="panel" href={`/posts/${post.id}`}>
+								<span class="meta">{formatDate(post.data.publishedAt)}</span>
+								<h3 {...post.edit.title}>{post.data.title}</h3>
+								{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+							</a>
+						))}
+					</div>
+				)
+			}
+		</section>
+
+		{
+			links.length > 0 && (
+				<section class="section last">
+					<div class="section-head">
+						<div>
+							<span class="eyebrow">Signals</span>
+							<h2>活動リンク</h2>
+						</div>
+					</div>
+					<div class="links">
+						{links.map((link) => (
+							<a class="panel link" href={link.data.link_url} target="_blank" rel="noopener noreferrer">
+								<span class="meta">{link.data.platform}</span>
+								<strong>{link.data.title}</strong>
+							</a>
+						))}
+					</div>
+				</section>
 			)
 		}
-	</section>
-
-	{
-		links.length > 0 && (
-			<section class="section">
-				<div class="section-head">
-					<h2>活動リンク</h2>
-				</div>
-				<div class="link-row">
-					{links.map((link) => (
-						<a class="card link-chip" href={link.data.link_url} target="_blank" rel="noopener noreferrer">
-							<span class="meta">{link.data.platform}</span>
-							<strong>{link.data.title}</strong>
-						</a>
-					))}
-				</div>
-			</section>
-		)
-	}
+	</div>
 </Base>
+
+<script>
+	// Gentle pointer parallax on the hero art. Skipped when the user prefers less motion.
+	const hero = document.querySelector<HTMLElement>("[data-parallax]");
+	if (hero && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		hero.addEventListener("pointermove", (e) => {
+			const r = hero.getBoundingClientRect();
+			hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+			hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+		});
+	}
+</script>
 
 <style>
 	.hero {
-		padding: 48px 0 8px;
+		position: relative;
+		min-height: min(92vh, 860px);
+		display: grid;
+		align-items: center;
+		overflow: hidden;
+		border-bottom: 1px solid var(--line);
 	}
 
-	.hero h1 {
-		margin: 4px 0 8px;
-		font-size: clamp(2.6rem, 8vw, 4.5rem);
-		font-weight: 800;
+	.hero-art {
+		position: absolute;
+		inset: -4%;
+		transform: translate(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -16px));
+		transition: transform 0.4s ease-out;
 	}
 
-	.hero h1 span {
-		color: var(--accent);
+	.hero::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(ellipse at center, rgba(7, 8, 12, 0) 0%, rgba(7, 8, 12, 0.55) 60%, var(--ink) 100%),
+			linear-gradient(180deg, rgba(7, 8, 12, 0.2), var(--ink));
+		pointer-events: none;
 	}
 
-	.lead {
-		margin: 0;
-		font-size: clamp(1.1rem, 3vw, 1.4rem);
+	.halo {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: min(80vw, 640px);
+		aspect-ratio: 1;
+		translate: -50% -50%;
+		border-radius: 50%;
+		background: conic-gradient(from 0deg, transparent, rgba(217, 180, 90, 0.4), transparent 30%, transparent 50%, rgba(217, 180, 90, 0.25), transparent 80%);
+		mask: radial-gradient(circle, transparent 64%, #000 65%, #000 66%, transparent 67%);
+		animation: spin 30s linear infinite;
+		z-index: 1;
+	}
+
+	.hero-inner {
+		position: relative;
+		z-index: 2;
+		text-align: center;
+		padding-top: 64px;
+		padding-bottom: 64px;
+	}
+
+	.crest {
+		margin: 8px 0 4px;
+		font-family: var(--font-crest);
+		font-size: clamp(3rem, 12vw, 7.5rem);
 		font-weight: 700;
+		letter-spacing: 0.06em;
+		line-height: 1.05;
+		background: linear-gradient(180deg, #fff6d8 0%, #e7c56d 45%, #a67c2b 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		filter: drop-shadow(0 0 30px rgba(217, 180, 90, 0.35));
 	}
 
-	.sub {
+	.motto {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(1.1rem, 3vw, 1.6rem);
+		color: var(--gold-soft);
+	}
+
+	.intro {
 		color: var(--text-muted);
+		margin: 18px auto 28px;
 	}
 
-	.link-row {
+	.cta {
+		display: inline-block;
+		padding: 12px 28px;
+		border-radius: 999px;
+		border: 1px solid var(--gold);
+		color: var(--gold-soft);
+		background: rgba(217, 180, 90, 0.08);
+		transition: background 0.2s ease;
+	}
+
+	.cta:hover {
+		text-decoration: none;
+		background: rgba(217, 180, 90, 0.2);
+	}
+
+	.gates {
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+	}
+
+	.links {
 		display: flex;
-		gap: 12px;
 		flex-wrap: wrap;
+		gap: 12px;
 	}
 
-	.link-chip {
-		padding: 12px 18px;
-		gap: 2px;
+	.link {
+		display: flex;
+		flex-direction: column;
+		padding: 14px 20px;
+	}
+
+	.last {
+		padding-bottom: 80px;
+	}
+
+	@keyframes spin {
+		to {
+			rotate: 360deg;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.halo {
+			animation: none;
+		}
 	}
 </style>
