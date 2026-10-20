@@ -13,7 +13,7 @@ Don'z Lab の「城」。ラボの門（カード）をくぐると、各ラボ�
 | `world`（世界） | 各ラボの中、エージェントの詳細 | ラボごとの世界グラフィックとテーマカラーで、全画面を使って没入させる |
 | `business`（ビジネス） | `world: business` のラボ、`layout: business` の固定ページ | 白基調のクリーンな構造。アニメーションなし |
 
-- 世界グラフィックは `src/components/WorldArt.astro`（SVG とアニメーション）。`circuit` / `strings` / `sound` / `kitchen` / `signal` / `constellation` / `device` / `business`
+- 世界グラフィックは `src/components/WorldArt.astro`（SVG とアニメーション）。`circuit` / `strings` / `sound` / `kitchen` / `signal` / `constellation` / `device` / `stage` / `business`
 - ラボに `thumbnail`（サムネイル）や `hero_image`（メインビジュアル）の画像を入れると、グラフィックの代わりにその画像が出る
 - 門からラボへの移動は、ブラウザのページ遷移アニメーション（View Transitions）でつながる
 - 「動きを減らす」設定の人には、アニメーションを止める

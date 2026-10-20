@@ -64,6 +64,7 @@
 							"signal",
 							"constellation",
 							"device",
+							"stage",
 							"business"
 						]
 					}
@@ -612,6 +613,62 @@
 							"summary": "AI と遊びながらつくる日々を発信する",
 							"state": "稼働中",
 							"link": "https://x.com/aimagedon"
+						}
+					]
+				}
+			},
+			{
+				"id": "reidol-fan-portal",
+				"slug": "reidol-fan-portal",
+				"status": "published",
+				"data": {
+					"title": "Re:IDOL ファンポータル",
+					"tagline": "ステージの世界。推しを、全力で応援する",
+					"lab_status": "準備中",
+					"world": "stage",
+					"accent": "#e8384f",
+					"sort_order": 55,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "b0",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s0",
+									"text": "「日本を景気良くするアイドル」Re:IDOL を応援する、非公式（アンオフィシャル）のファンポータル。"
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "b1",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"_key": "s1",
+									"text": "メンバー紹介、ディスコグラフィ、スケジュールを、ファンの目線でまとめている。ポータル本体は専用のトップページから入る。"
+								}
+							]
+						}
+					],
+					"works": [
+						{
+							"name": "メンバー紹介",
+							"summary": "メンバーカラーとプロフィールで、一人ひとりを紹介する",
+							"state": "稼働中"
+						},
+						{
+							"name": "ディスコグラフィ",
+							"summary": "1st デジタルアルバム『Re:START!!』（全8曲）ほか",
+							"state": "稼働中"
+						},
+						{
+							"name": "スケジュール",
+							"summary": "2026年8月7日 SHIBUYA DIVE のデビューライブから、これからの出演まで",
+							"state": "稼働中"
 						}
 					]
 				}

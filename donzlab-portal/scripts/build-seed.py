@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-WORLDS = ["circuit", "strings", "sound", "kitchen", "signal", "constellation", "device", "business"]
+WORLDS = ["circuit", "strings", "sound", "kitchen", "signal", "constellation", "device", "stage", "business"]
 
 
 def pt(*paragraphs):
@@ -187,6 +187,15 @@ labs = [
      ["X・YouTube・TikTok などの発信を、AI と組んで設計・検証するラボ。"],
      [work("SNS 戦略", "どこで、何を、どう届けるかを設計する", "稼働中"),
       work("X「AIまげ丼」", "AI と遊びながらつくる日々を発信する", "稼働中", "https://x.com/aimagedon")]),
+    # Re:IDOL: idol-side information only (public facts). Family-side content stays off this site.
+    # Publish only after the group's management has approved; until then the lab stays 準備中 and
+    # lab_url is left empty (set it to the fan portal's gate page once it is public).
+    ("reidol-fan-portal", "Re:IDOL ファンポータル", "ステージの世界。推しを、全力で応援する", "準備中", "stage", "#e8384f", 55,
+     ["「日本を景気良くするアイドル」Re:IDOL を応援する、非公式（アンオフィシャル）のファンポータル。",
+      "メンバー紹介、ディスコグラフィ、スケジュールを、ファンの目線でまとめている。ポータル本体は専用のトップページから入る。"],
+     [work("メンバー紹介", "メンバーカラーとプロフィールで、一人ひとりを紹介する", "稼働中"),
+      work("ディスコグラフィ", "1st デジタルアルバム『Re:START!!』（全8曲）ほか", "稼働中"),
+      work("スケジュール", "2026年8月7日 SHIBUYA DIVE のデビューライブから、これからの出演まで", "稼働中")]),
     ("llm-cost-lab", "LLM比較Lab", "LLM のコストと性能を、数字で比べる", "開発中", "business", "#2f6fed", 60,
      ["いろいろな LLM のコストパフォーマンスを測り、用途ごとに比べるラボ。"],
      [work("コスパ・ベンチマーク", "同じ課題を複数の LLM に解かせ、費用と品質を測る", "開発中")]),

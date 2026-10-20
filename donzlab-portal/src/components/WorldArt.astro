@@ -68,6 +68,10 @@ nodes.forEach((a, i) =>
 // device: floating phones
 const phones = Array.from({ length: 5 }, (_, i) => ({ x: 70 + i * 150 + r(-20, 20), y: r(90, 220), rot: r(-14, 14), delay: i * 0.7 }));
 
+// stage: spotlights sweeping over a stage, with sparkles in the air
+const beams = Array.from({ length: 5 }, (_, i) => ({ x: 80 + i * 160, delay: i * 0.9, dir: i % 2 ? 1 : -1 }));
+const sparkles = Array.from({ length: 26 }, () => ({ x: r(20, W - 20), y: r(20, H * 0.7), s: r(1.5, 4), delay: r(0, 4) }));
+
 const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 ---
 
@@ -176,6 +180,36 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 				))}
 				{nodes.map((n) => (
 					<circle class="star" cx={n.x} cy={n.y} r={n.s} style={`animation-delay:-${n.delay.toFixed(2)}s`} />
+				))}
+			</g>
+		)
+	}
+
+	{
+		world === "stage" && (
+			<g class="stage">
+				<defs>
+					<linearGradient id={`${id}-beam`} x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
+						<stop offset="100%" stop-color={color} stop-opacity="0" />
+					</linearGradient>
+				</defs>
+				{beams.map((b) => (
+					<polygon
+						class="beam"
+						points={`${b.x - 6},0 ${b.x + 6},0 ${b.x + 120},${H} ${b.x - 120},${H}`}
+						fill={`url(#${id}-beam)`}
+						style={`transform-origin:${b.x}px 0px;animation-delay:-${b.delay}s;--dir:${b.dir}`}
+					/>
+				))}
+				<rect class="floor" x="0" y={H - 70} width={W} height="70" />
+				<line class="floor-edge" x1="0" y1={H - 70} x2={W} y2={H - 70} />
+				{sparkles.map((p) => (
+					<path
+						class="sparkle"
+						d={`M${p.x},${p.y - p.s * 2} L${p.x + p.s * 0.5},${p.y} L${p.x},${p.y + p.s * 2} L${p.x - p.s * 0.5},${p.y} Z M${p.x - p.s * 2},${p.y} L${p.x},${p.y + p.s * 0.5} L${p.x + p.s * 2},${p.y} L${p.x},${p.y - p.s * 0.5} Z`}
+						style={`animation-delay:-${p.delay.toFixed(2)}s`}
+					/>
 				))}
 			</g>
 		)
@@ -350,6 +384,36 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 		fill: #ffffff;
 		filter: drop-shadow(0 0 4px var(--accent));
 		animation: twinkle 4s ease-in-out infinite;
+	}
+
+	/* stage */
+	.world-stage .bg {
+		fill: #12040a;
+	}
+	.beam {
+		mix-blend-mode: screen;
+		animation: sweep 6s ease-in-out infinite alternate;
+	}
+	.floor {
+		fill: color-mix(in srgb, var(--accent) 22%, #12040a);
+	}
+	.floor-edge {
+		stroke: var(--accent);
+		stroke-width: 3;
+		filter: drop-shadow(0 0 8px var(--accent));
+	}
+	.sparkle {
+		fill: #ffffff;
+		filter: drop-shadow(0 0 4px var(--accent));
+		animation: twinkle 2.6s ease-in-out infinite;
+	}
+	@keyframes sweep {
+		from {
+			transform: rotate(calc(var(--dir) * -14deg));
+		}
+		to {
+			transform: rotate(calc(var(--dir) * 14deg));
+		}
 	}
 
 	/* device */
