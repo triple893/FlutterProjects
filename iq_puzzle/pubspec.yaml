@@ -1,0 +1,28 @@
+name: iq_puzzle
+description: "結果まで無料で遊べる行列推理（IQ風）パズル。"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Web版が日本語フォントを外部から読み込まずに済むよう、使用文字だけの
+  # サブセットを同梱する。文言を変えたら tool/subset_fonts.py を再実行する。
+  fonts:
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
+        - asset: assets/fonts/NotoSansJP-Bold.ttf
+          weight: 700

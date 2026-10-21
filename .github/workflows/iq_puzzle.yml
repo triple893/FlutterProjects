@@ -1,0 +1,27 @@
+name: iq_puzzle
+
+on:
+  push:
+    branches: [main]
+    paths: ['iq_puzzle/**', '.github/workflows/iq_puzzle.yml']
+  pull_request:
+    paths: ['iq_puzzle/**', '.github/workflows/iq_puzzle.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iq_puzzle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build web --release --no-web-resources-cdn
