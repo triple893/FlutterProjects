@@ -37,19 +37,19 @@ const accent = layer === "街" ? "#e08a4f" : "#d9b45a";
 			<WorldArt world={layer === "街" ? "kitchen" : "circuit"} accent={accent} seed={agent.id} variant="hero" />
 		</div>
 		<div class="container shrine-inner">
-			<a class="back-link enter" href="/agents">← 神殿と街</a>
-			<div class="portrait enter" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
+			<a class="back-link rise" href="/agents">← Temple &amp; Town</a>
+			<div class="portrait rise" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
 				{agent.data.portrait ? <Image image={agent.data.portrait} /> : <span aria-hidden="true">{agent.data.title.slice(0, 1)}</span>}
 			</div>
-			<span class="eyebrow enter enter-2">{layer}</span>
-			{agent.data.epithet && <p class="epithet enter enter-2" {...agent.edit.epithet}>{agent.data.epithet}</p>}
-			<h1 class="enter enter-2" {...agent.edit.title}>{agent.data.title}</h1>
-			{agent.data.catchphrase && <blockquote class="enter enter-3" {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</blockquote>}
+			<span class="eyebrow rise rise-2">{layer}{agent.data.name_en ? ` — ${agent.data.name_en}` : ""}</span>
+			{agent.data.epithet && <p class="epithet rise rise-2" {...agent.edit.epithet}>{agent.data.epithet}</p>}
+			<h1 class="rise rise-2" {...agent.edit.title}>{agent.data.title}</h1>
+			{agent.data.catchphrase && <blockquote class="rise rise-3" {...agent.edit.catchphrase}>「{agent.data.catchphrase}」</blockquote>}
 		</div>
 	</section>
 
 	<div class="container profile">
-		<article class="panel prose enter enter-3">
+		<article class="frame profile-card rise rise-3"><div class="frame-inner prose">
 			<dl>
 				{agent.data.role && (
 					<>
@@ -65,7 +65,7 @@ const accent = layer === "街" ? "#e08a4f" : "#d9b45a";
 				)}
 			</dl>
 			<PortableText value={agent.data.content} />
-		</article>
+		</div></article>
 	</div>
 </Base>
 
@@ -145,6 +145,10 @@ const accent = layer === "街" ? "#e08a4f" : "#d9b45a";
 		font-family: var(--font-display);
 		font-size: 1.15rem;
 		color: var(--gold-soft);
+	}
+
+	.profile-card {
+		width: min(100%, 760px);
 	}
 
 	.profile {

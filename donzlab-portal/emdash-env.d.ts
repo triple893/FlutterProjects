@@ -10,6 +10,7 @@ export interface Agent {
   slug: string | null;
   status: string;
   title: string;
+  name_en?: string;
   epithet?: string;
   layer?: "本陣" | "天" | "街" | "復活待ち";
   role?: string;
@@ -31,6 +32,7 @@ export interface Lab {
   slug: string | null;
   status: string;
   title: string;
+  name_en?: string;
   tagline?: string;
   lab_status?: "稼働中" | "開発中" | "準備中";
   world?: "circuit" | "strings" | "sound" | "kitchen" | "signal" | "constellation" | "device" | "stage" | "business";

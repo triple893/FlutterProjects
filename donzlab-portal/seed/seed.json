@@ -32,6 +32,12 @@
 					"searchable": true
 				},
 				{
+					"slug": "name_en",
+					"label": "英語のひとこと（世界向け）",
+					"type": "string",
+					"searchable": true
+				},
+				{
 					"slug": "tagline",
 					"label": "ひとこと",
 					"type": "string",
@@ -158,6 +164,11 @@
 					"type": "string",
 					"required": true,
 					"searchable": true
+				},
+				{
+					"slug": "name_en",
+					"label": "英語名",
+					"type": "string"
 				},
 				{
 					"slug": "epithet",
@@ -374,12 +385,7 @@
 			"items": [
 				{
 					"type": "custom",
-					"label": "城",
-					"url": "/"
-				},
-				{
-					"type": "custom",
-					"label": "ラボ",
+					"label": "門",
 					"url": "/labs"
 				},
 				{
@@ -394,7 +400,7 @@
 				},
 				{
 					"type": "custom",
-					"label": "Don'z Lab について",
+					"label": "私たちについて",
 					"url": "/about"
 				}
 			]
@@ -408,6 +414,7 @@
 				"status": "published",
 				"data": {
 					"title": "DonzCorelab",
+					"name_en": "The core of the castle",
 					"tagline": "城の中枢。AI たちが動くための基盤",
 					"lab_status": "稼働中",
 					"world": "circuit",
@@ -464,6 +471,7 @@
 				"status": "published",
 				"data": {
 					"title": "Don'z MusicLab",
+					"name_en": "Ear-copy, tabs & composition",
 					"tagline": "音楽の世界。耳コピからタブ譜、作曲まで",
 					"lab_status": "開発中",
 					"world": "strings",
@@ -503,6 +511,7 @@
 				"status": "published",
 				"data": {
 					"title": "Don'z 料理Lab",
+					"name_en": "The kitchen lab",
 					"tagline": "台所の世界。レシピを AI と研究する",
 					"lab_status": "準備中",
 					"world": "kitchen",
@@ -537,6 +546,7 @@
 				"status": "published",
 				"data": {
 					"title": "DonzMarketingLab",
+					"name_en": "Signals to the world",
 					"tagline": "発信の世界。声を遠くへ届ける",
 					"lab_status": "稼働中",
 					"world": "signal",
@@ -577,6 +587,7 @@
 				"status": "published",
 				"data": {
 					"title": "Re:IDOL ファンポータル",
+					"name_en": "Unofficial fan portal",
 					"tagline": "ステージの世界。推しを、全力で応援する",
 					"lab_status": "準備中",
 					"world": "stage",
@@ -633,6 +644,7 @@
 				"status": "published",
 				"data": {
 					"title": "LLM比較Lab",
+					"name_en": "Cost × quality benchmarks",
 					"tagline": "LLM のコストと性能を、数字で比べる",
 					"lab_status": "開発中",
 					"world": "business",
@@ -667,6 +679,7 @@
 				"status": "published",
 				"data": {
 					"title": "Graphify 知識基盤",
+					"name_en": "A constellation of memory",
 					"tagline": "記憶の世界。知識を星座のようにつなぐ",
 					"lab_status": "稼働中",
 					"world": "constellation",
@@ -718,6 +731,7 @@
 				"status": "published",
 				"data": {
 					"title": "FlutterProject",
+					"name_en": "Apps, built with AI",
 					"tagline": "アプリの世界。AI と一緒にスマホアプリをつくる",
 					"lab_status": "開発中",
 					"world": "device",
@@ -759,6 +773,7 @@
 				"status": "published",
 				"data": {
 					"title": "クロちゃん",
+					"name_en": "Kuro",
 					"epithet": "社長",
 					"layer": "本陣",
 					"role": "意味・判断・方針",
@@ -787,6 +802,7 @@
 				"status": "published",
 				"data": {
 					"title": "コデちゃん",
+					"name_en": "Kode",
 					"epithet": "総合管制",
 					"layer": "本陣",
 					"role": "実装・査読・進捗",
@@ -815,6 +831,7 @@
 				"status": "published",
 				"data": {
 					"title": "グラちゃん",
+					"name_en": "Gura",
 					"epithet": "軍師",
 					"layer": "本陣",
 					"role": "調査・クリエイティブ",
@@ -843,6 +860,7 @@
 				"status": "published",
 				"data": {
 					"title": "テミスちゃん",
+					"name_en": "Themis",
 					"epithet": "憲法と法務の守護神",
 					"layer": "天",
 					"role": "ルール監査・法務アドバイザー",
@@ -883,6 +901,7 @@
 				"status": "published",
 				"data": {
 					"title": "ムネモちゃん",
+					"name_en": "Mnemosyne",
 					"epithet": "記憶の女神",
 					"layer": "天",
 					"role": "記憶・引き継ぎ・知識グラフ",
@@ -923,6 +942,7 @@
 				"status": "published",
 				"data": {
 					"title": "ストラティカ",
+					"name_en": "Stratica",
 					"epithet": "北極星の番人",
 					"layer": "天",
 					"role": "意思決定支援・北極星ゴール整合",
@@ -951,6 +971,7 @@
 				"status": "published",
 				"data": {
 					"title": "スン爺",
+					"name_en": "Sun-jii",
 					"epithet": "GOAL JASON — GOD OF PLANNING",
 					"layer": "街",
 					"role": "タスクの番人",
@@ -979,6 +1000,7 @@
 				"status": "published",
 				"data": {
 					"title": "道具屋源さん",
+					"name_en": "Gen-san",
 					"epithet": "横断能力の棚",
 					"layer": "街",
 					"role": "技術・手法の転用",
@@ -1007,6 +1029,7 @@
 				"status": "published",
 				"data": {
 					"title": "パルスくん",
+					"name_en": "Pulse",
 					"epithet": "衛生兵",
 					"layer": "街",
 					"role": "サーバーの死活監視",
@@ -1035,6 +1058,7 @@
 				"status": "published",
 				"data": {
 					"title": "クロノ",
+					"name_en": "Chrono",
 					"epithet": "時の守護",
 					"layer": "復活待ち",
 					"role": "締切・時間の守護",

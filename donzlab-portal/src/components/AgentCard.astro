@@ -4,59 +4,43 @@ import type { Agent } from "../../emdash-env";
 
 interface Props {
 	agent: { id: string; data: Agent; edit: Record<string, Record<string, string>> };
+	/** Portrait diameter in px */
+	size?: number;
 }
 
-const { agent } = Astro.props;
+const { agent, size = 96 } = Astro.props;
 const layer = agent.data.layer ?? "街";
 ---
 
-<a class="agent" href={`/agents/${agent.id}`} data-layer={layer}>
-	<div class="portrait" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
+<a class="medallion" href={`/agents/${agent.id}`} data-layer={layer} style={`--size:${size}px`}>
+	<span class="portrait" {...agent.edit.portrait} style={`view-transition-name: agent-${agent.id}`}>
 		{agent.data.portrait ? <Image image={agent.data.portrait} /> : <span aria-hidden="true">{agent.data.title.slice(0, 1)}</span>}
-	</div>
-	<div class="body">
-		{agent.data.epithet && <span class="epithet" {...agent.edit.epithet}>{agent.data.epithet}</span>}
-		<h3 {...agent.edit.title}>{agent.data.title}</h3>
-		{agent.data.role && <p class="role" {...agent.edit.role}>{agent.data.role}</p>}
-		{agent.data.engine && <span class="meta">中の人: {agent.data.engine}</span>}
-	</div>
+	</span>
+	<span class="name" {...agent.edit.title}>{agent.data.title}</span>
+	{agent.data.epithet && <span class="epithet" {...agent.edit.epithet}>{agent.data.epithet}</span>}
 </a>
 
 <style>
-	.agent {
+	.medallion {
 		display: flex;
-		gap: 16px;
+		flex-direction: column;
 		align-items: center;
-		padding: 18px;
-		border-radius: var(--radius);
-		border: 1px solid var(--line);
-		background: var(--ink-raised);
+		gap: 10px;
+		text-align: center;
 		color: var(--text);
-		transition:
-			transform 0.25s ease,
-			border-color 0.25s ease;
-	}
-
-	.agent:hover {
-		text-decoration: none;
-		transform: translateY(-3px);
-		border-color: var(--gold);
+		max-width: calc(var(--size) + 64px);
 	}
 
 	.portrait {
-		flex: none;
-		position: relative;
-		width: 84px;
-		height: 84px;
+		width: var(--size);
+		height: var(--size);
 		border-radius: 50%;
 		overflow: hidden;
 		display: grid;
 		place-items: center;
-		background: radial-gradient(circle at 30% 30%, #2a2416, #0b0c12 70%);
-		border: 1px solid var(--gold);
-		color: var(--gold-soft);
 		font-family: var(--font-display);
-		font-size: 2rem;
+		font-size: calc(var(--size) * 0.38);
+		transition: box-shadow 0.3s ease;
 	}
 
 	.portrait :global(img) {
@@ -65,48 +49,43 @@ const layer = agent.data.layer ?? "街";
 		object-fit: cover;
 	}
 
-	/* 天: a halo of gold circuitry */
-	[data-layer="天"] .portrait {
+	/* 天: gold halo ring */
+	[data-layer="天"] .portrait,
+	[data-layer="本陣"] .portrait {
+		border: 1px solid var(--gold);
+		background: #12100c;
+		color: var(--gold-soft);
 		box-shadow:
-			0 0 0 4px #07080c,
-			0 0 0 5px rgba(217, 180, 90, 0.7),
-			0 0 28px rgba(217, 180, 90, 0.45);
+			0 0 0 6px var(--ink-raised),
+			0 0 0 7px rgba(201, 162, 74, 0.5);
 	}
 
-	/* 街: warm lantern light */
+	[data-layer="天"]:hover .portrait {
+		box-shadow:
+			0 0 0 6px var(--ink-raised),
+			0 0 0 7px rgba(201, 162, 74, 0.8),
+			0 0 40px rgba(201, 162, 74, 0.35);
+	}
+
+	/* 街: lantern light */
 	[data-layer="街"] .portrait {
-		border-color: #e08a4f;
-		background: radial-gradient(circle at 30% 30%, #3a2014, #0b0c12 70%);
-		color: #f6c79c;
-	}
-
-	[data-layer="復活待ち"] {
-		opacity: 0.6;
+		border: 1px solid #e58a55;
+		background: #22160f;
+		color: #f3c8a5;
 	}
 
 	[data-layer="復活待ち"] .portrait {
-		border-style: dashed;
+		border: 1px dashed var(--text-faint);
+		color: var(--text-faint);
 	}
 
-	.body {
-		min-width: 0;
+	.name {
+		font-family: var(--font-display);
+		font-size: 17px;
 	}
 
 	.epithet {
-		display: block;
-		color: var(--gold);
-		font-size: 0.75rem;
-		letter-spacing: 0.08em;
-	}
-
-	h3 {
-		margin: 2px 0;
-		font-size: 1.15rem;
-	}
-
-	.role {
-		margin: 0;
-		color: var(--text-muted);
-		font-size: 0.88rem;
+		font-size: 12px;
+		color: var(--text-faint);
 	}
 </style>

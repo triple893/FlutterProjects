@@ -117,16 +117,17 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 	{
 		world === "strings" && (
 			<g class="strings">
+				{[0, 1.6, 3.2].map((d) => (
+					<circle class="sound-wave" cx={W * 0.75} cy={H * 0.38} r="80" style={`animation-delay:-${d}s`} />
+				))}
 				{Array.from({ length: 9 }, (_, i) => (
 					<line class="fret" x1={60 + i * 85} y1="80" x2={60 + i * 85} y2="420" />
 				))}
-				{strings.map((s) => (
-					<path class="string" d={s.a} stroke-width={s.w}>
-						<animate attributeName="d" values={`${s.a};${s.b};${s.a}`} dur={`${s.dur}s`} repeatCount="indefinite" />
-					</path>
+				{strings.map((s, i) => (
+					<path class="string" d={`M0,${s.y} L${W},${s.y}`} stroke-width={s.w} style={`animation-delay:${(i * 0.05).toFixed(2)}s`} />
 				))}
-				{[180, 350, 520, 640].map((x, i) => (
-					<circle class="note" cx={x} cy={110 + i * 56 * 1.4} r="11" style={`animation-delay:-${i * 0.8}s`} />
+				{[180, 350, 520].map((x, i) => (
+					<circle class="note" cx={x} cy={110 + (i + 1) * 56} r="11" />
 				))}
 			</g>
 		)
@@ -293,19 +294,19 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 	.halo-1 {
 		stroke-width: 2;
 		stroke-dasharray: 4 10;
-		animation: spin 40s linear infinite;
+		animation: spin 90s linear infinite;
 	}
 	.halo-2 {
 		stroke-opacity: 0.5;
 		stroke-dasharray: 60 30;
-		animation: spin 24s linear infinite reverse;
+		animation: spin 60s linear infinite reverse;
 	}
 	.core {
 		fill: var(--accent);
 		filter: drop-shadow(0 0 18px var(--accent));
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: breathe 4s ease-in-out infinite;
+		animation: heart 1s ease-in-out infinite;
 	}
 
 	/* strings */
@@ -314,17 +315,54 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 		stroke-opacity: 0.08;
 		stroke-width: 3;
 	}
+	/* Law 2: a plucked string rings hardest at first and decays to rest.
+	   It sounds once on arrival; data-pluck on a button rings it again. */
 	.string {
 		fill: none;
 		stroke: var(--accent);
 		filter: drop-shadow(0 0 3px var(--accent));
+		transform-box: fill-box;
+		animation: damp 2s cubic-bezier(0.3, 0, 0.2, 1) both;
+	}
+	.world-art.replay .string {
+		animation-name: damp-again;
+	}
+	@keyframes damp {
+		0% { transform: translateY(0); }
+		6% { transform: translateY(-12px); }
+		12% { transform: translateY(10px); }
+		18% { transform: translateY(-8px); }
+		26% { transform: translateY(6px); }
+		34% { transform: translateY(-4px); }
+		44% { transform: translateY(3px); }
+		56% { transform: translateY(-1.5px); }
+		70% { transform: translateY(0.8px); }
+		100% { transform: translateY(0); }
+	}
+	@keyframes damp-again {
+		0% { transform: translateY(0); }
+		6% { transform: translateY(-12px); }
+		12% { transform: translateY(10px); }
+		18% { transform: translateY(-8px); }
+		26% { transform: translateY(6px); }
+		34% { transform: translateY(-4px); }
+		44% { transform: translateY(3px); }
+		56% { transform: translateY(-1.5px); }
+		70% { transform: translateY(0.8px); }
+		100% { transform: translateY(0); }
 	}
 	.note {
 		fill: var(--accent);
 		opacity: 0.85;
+	}
+	/* Sound spreads outward from where it is made (Law 1). */
+	.sound-wave {
+		fill: none;
+		stroke: #b88cff;
+		stroke-width: 1.2;
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: breathe 3.2s ease-in-out infinite;
+		animation: ripple 4.8s ease-out infinite;
 	}
 
 	/* sound */
@@ -356,7 +394,7 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 		stroke-width: 10;
 		stroke-linecap: round;
 		filter: blur(4px);
-		animation: rise 6s ease-in-out infinite;
+		animation: steam-rise 6s ease-in-out infinite;
 	}
 
 	/* signal */
@@ -464,6 +502,21 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 			transform: rotate(360deg);
 		}
 	}
+	@keyframes heart {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		15% {
+			transform: scale(1.25);
+		}
+		30% {
+			transform: scale(1);
+		}
+		45% {
+			transform: scale(1.12);
+		}
+	}
 	@keyframes breathe {
 		50% {
 			transform: scale(1.18);
@@ -498,7 +551,7 @@ const id = `w-${seed.replace(/[^a-z0-9]/gi, "")}-${variant}`;
 			transform: scaleY(1);
 		}
 	}
-	@keyframes rise {
+	@keyframes steam-rise {
 		0% {
 			transform: translateY(40px);
 			opacity: 0;

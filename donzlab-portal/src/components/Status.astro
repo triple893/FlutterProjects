@@ -1,0 +1,68 @@
+---
+import { statusInfo } from "../utils/format";
+
+interface Props {
+	status?: string | null;
+}
+
+const info = statusInfo(Astro.props.status);
+---
+
+<span class="status" data-status={info.key}>
+	<span class="dot" aria-hidden="true"></span>
+	<span>{info.en}</span>
+	<span class="sr-only">（{Astro.props.status ?? "準備中"}）</span>
+</span>
+
+<style>
+	.status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.15em;
+		white-space: nowrap;
+	}
+
+	.dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+
+	[data-status="live"] {
+		color: var(--status-live);
+	}
+
+	[data-status="dev"] {
+		color: var(--status-dev);
+	}
+
+	[data-status="soon"] {
+		color: var(--text-faint);
+	}
+
+	/* Law 3: only what is alive moves. Development glows still; planned is an outline. */
+	[data-status="live"] .dot {
+		animation: alive 2s ease-in-out infinite;
+	}
+
+	[data-status="soon"] .dot {
+		background: transparent;
+		border: 1px solid currentColor;
+	}
+
+	@keyframes alive {
+		50% {
+			opacity: 0.3;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-status="live"] .dot {
+			animation: none;
+		}
+	}
+</style>

@@ -2,32 +2,43 @@
 import { getEmDashCollection } from "emdash";
 import Base from "../../layouts/Base.astro";
 import LabCard from "../../components/LabCard.astro";
-import { bySortOrder } from "../../utils/format";
+import { bySortOrder, countNumeral } from "../../utils/format";
 
 const { entries, cacheHint } = await getEmDashCollection("labs", { limit: 100 });
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 const labs = [...entries].sort(bySortOrder);
 ---
 
-<Base title="ラボの門" description="Don'z Lab の各ラボへの入口">
+<Base title="門" description="Don'z Lab の各ラボへの入口">
 	<div class="container page">
-		<span class="eyebrow enter">Gates</span>
-		<h1 class="enter enter-2">ラボの門</h1>
-		<p class="meta enter enter-2">門をくぐると、そのラボの世界に入ります。</p>
-		<div class="grid gates enter enter-3">
-			{labs.map((lab) => <LabCard lab={lab} />)}
+		<div class="section-head">
+			<div>
+				<p class="eyebrow rise">The Gates</p>
+				<h1 class="rise rise-2">{countNumeral(labs.length)}つの門</h1>
+			</div>
+			<p class="note rise rise-3">門をくぐると、そのラボの世界に入ります。<br /><span class="en">Step through a gate to enter its world.</span></p>
+		</div>
+		<div class="grid">
+			{labs.map((lab, i) => <LabCard lab={lab} index={i} />)}
 		</div>
 	</div>
 </Base>
 
 <style>
 	.page {
-		padding-top: 48px;
-		padding-bottom: 80px;
+		padding-top: 72px;
 	}
 
-	.gates {
-		margin-top: 24px;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+	h1 {
+		margin: 0;
+		font-size: clamp(2.4rem, 6vw, 4rem);
+	}
+
+	.note {
+		margin: 0;
+		max-width: 420px;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-muted);
 	}
 </style>

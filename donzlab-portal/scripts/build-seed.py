@@ -44,6 +44,7 @@ collections = [
         "supports": ["drafts", "revisions", "preview", "search", "seo"],
         "fields": [
             title_field("ラボ名"),
+            {"slug": "name_en", "label": "英語のひとこと（世界向け）", "type": "string", "searchable": True},
             {"slug": "tagline", "label": "ひとこと", "type": "string", "searchable": True},
             {
                 "slug": "lab_status",
@@ -89,6 +90,7 @@ collections = [
         "supports": ["drafts", "revisions", "preview", "search", "seo"],
         "fields": [
             title_field("名前"),
+            {"slug": "name_en", "label": "英語名", "type": "string"},
             {"slug": "epithet", "label": "二つ名", "type": "string", "searchable": True},
             {
                 "slug": "layer",
@@ -233,6 +235,21 @@ agents = [
      ["締切と時間を守る天の神。原生体は失われたが、毎朝の台帳監査とカレンダー同期の役目として、復活を待っている。"]),
 ]
 
+# English lines shown beside the Japanese ones, so the site reads for visitors outside Japan.
+NAME_EN = {
+    "donz-corelab": "The core of the castle",
+    "donz-music-lab": "Ear-copy, tabs & composition",
+    "cooking-lab": "The kitchen lab",
+    "donz-marketing-lab": "Signals to the world",
+    "reidol-fan-portal": "Unofficial fan portal",
+    "llm-cost-lab": "Cost × quality benchmarks",
+    "knowledge-graph": "A constellation of memory",
+    "flutter-project": "Apps, built with AI",
+    "kuro": "Kuro", "kode": "Kode", "gura": "Gura",
+    "themis": "Themis", "mnemosyne": "Mnemosyne", "stratica": "Stratica",
+    "sunjii": "Sun-jii", "gen-san": "Gen-san", "pulse": "Pulse", "chrono": "Chrono",
+}
+
 links = [
     ("x-aimagedon", "X「AIまげ丼」", "https://x.com/aimagedon", "X", 10),
 ]
@@ -242,7 +259,7 @@ content = {
     "labs": [
         {
             "id": slug, "slug": slug, "status": "published",
-            "data": {"title": name, "tagline": tagline, "lab_status": status, "world": world, "accent": accent,
+            "data": {"title": name, "name_en": NAME_EN[slug], "tagline": tagline, "lab_status": status, "world": world, "accent": accent,
                      "sort_order": order, "content": pt(*intro), "works": works},
         }
         for slug, name, tagline, status, world, accent, order, intro, works in labs
@@ -250,7 +267,7 @@ content = {
     "agents": [
         {
             "id": slug, "slug": slug, "status": "published",
-            "data": {"title": name, "epithet": epithet, "layer": layer, "role": role, "engine": engine,
+            "data": {"title": name, "name_en": NAME_EN[slug], "epithet": epithet, "layer": layer, "role": role, "engine": engine,
                      "catchphrase": catch, "sort_order": order, "content": pt(*profile)},
         }
         for slug, name, epithet, layer, role, engine, catch, order, profile in agents
@@ -314,11 +331,10 @@ seed = {
         {
             "name": "primary", "label": "メインメニュー",
             "items": [
-                {"type": "custom", "label": "城", "url": "/"},
-                {"type": "custom", "label": "ラボ", "url": "/labs"},
+                {"type": "custom", "label": "門", "url": "/labs"},
                 {"type": "custom", "label": "神殿と街", "url": "/agents"},
                 {"type": "custom", "label": "開発日記", "url": "/posts"},
-                {"type": "custom", "label": "Don'z Lab について", "url": "/about"},
+                {"type": "custom", "label": "私たちについて", "url": "/about"},
             ],
         }
     ],

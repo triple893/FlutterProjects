@@ -1,16 +1,25 @@
 ---
-import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
+import { getEmDashCollection, getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
 import { Image, PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
 import WorldArt from "../../components/WorldArt.astro";
+import GateMotif from "../../components/GateMotif.astro";
+import Status from "../../components/Status.astro";
 import { resolveStarterSiteIdentity } from "../../utils/site-identity";
+import { bySortOrder, gateNumeral, statusInfo } from "../../utils/format";
 
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.rewrite("/404");
 
-const { entry: lab, cacheHint } = await getEmDashEntry("labs", slug);
+const [{ entry: lab, cacheHint }, allLabs] = await Promise.all([
+	getEmDashEntry("labs", slug),
+	getEmDashCollection("labs", { limit: 100 }),
+]);
 if (!lab) return Astro.rewrite("/404");
-if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(cacheHint);
+	Astro.cache.set(allLabs.cacheHint);
+}
 
 const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
 const seo = getSeoMeta(lab, {
@@ -19,8 +28,15 @@ const seo = getSeoMeta(lab, {
 	path: Astro.url.pathname.replace(/\/$/, ""),
 });
 
+const ordered = [...allLabs.entries].sort(bySortOrder);
+const position = ordered.findIndex((l) => l.id === lab.id);
+const prev = position > 0 ? ordered[position - 1] : null;
+const next = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null;
+const numeral = gateNumeral(Math.max(position, 0));
+
 const isBusiness = lab.data.world === "business";
 const works = lab.data.works ?? [];
+const worldEn = lab.data.name_en ?? lab.data.title;
 ---
 
 <Base
@@ -31,70 +47,74 @@ const works = lab.data.works ?? [];
 	image={seo.ogImage}
 	content={{ collection: "labs", id: lab.data.id, slug }}
 	mode={isBusiness ? "business" : "world"}
-	accent={lab.data.accent}
+	accent={isBusiness ? null : lab.data.accent}
 >
 	{
 		isBusiness ? (
 			<>
 				<section class="biz-hero">
-					<div class="container biz-hero-inner">
-						<div>
-							<a class="back-link" href="/labs">← ラボ一覧</a>
-							<span class="eyebrow">Lab</span>
+					<div class="container biz-hero-grid">
+						<div class="biz-copy">
+							<a class="back-link" href="/labs">← 門の一覧</a>
+							<p class="eyebrow">Lab {numeral}</p>
 							<h1 {...lab.edit.title}>{lab.data.title}</h1>
 							{lab.data.tagline && <p class="biz-lead" {...lab.edit.tagline}>{lab.data.tagline}</p>}
-							{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
+							<Status status={lab.data.lab_status} />
 						</div>
-						<div class="biz-art" style={`view-transition-name: world-${lab.id}`}>
-							{lab.data.hero_image ? (
-								<Image image={lab.data.hero_image} />
-							) : (
-								<WorldArt world="business" accent={lab.data.accent} seed={lab.id} variant="hero" />
-							)}
-						</div>
+						<figure class="biz-figure" style={`view-transition-name: gate-${lab.id}`}>
+							{lab.data.hero_image ? <Image image={lab.data.hero_image} /> : <GateMotif world="business" label={`${lab.data.title}の図`} />}
+						</figure>
 					</div>
 				</section>
+
 				<div class="container biz-body">
-					<section class="prose">
+					<section>
 						<h2>概要</h2>
-						<PortableText value={lab.data.content} />
+						<div class="prose">
+							<PortableText value={lab.data.content} />
+						</div>
 					</section>
+
 					{works.length > 0 && (
 						<section>
 							<h2>取り組み</h2>
-							<table class="biz-table">
-								<thead>
-									<tr>
-										<th scope="col">項目</th>
-										<th scope="col">内容</th>
-										<th scope="col">状態</th>
-									</tr>
-								</thead>
-								<tbody>
-									{works.map((w) => (
+							<div class="table-wrap">
+								<table>
+									<thead>
 										<tr>
-											<td>{w.link ? <a href={w.link}>{w.name}</a> : w.name}</td>
-											<td>{w.summary}</td>
-											<td>{w.state && <span class="badge" data-status={w.state}>{w.state}</span>}</td>
+											<th scope="col">項目</th>
+											<th scope="col">内容</th>
+											<th scope="col">状態</th>
 										</tr>
-									))}
-								</tbody>
-							</table>
+									</thead>
+									<tbody>
+										{works.map((w) => (
+											<tr>
+												<td class="strong">{w.link ? <a href={w.link}>{w.name}</a> : w.name}</td>
+												<td>{w.summary}</td>
+												<td>{w.state}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
 						</section>
 					)}
+
 					{lab.data.lab_url && (
-						<p>
-							<a class="biz-button" href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">
-								ラボのサイトを開く
+						<section class="biz-cta">
+							<h2>{lab.data.title} を開く</h2>
+							<a class="button" href={lab.data.lab_url} rel="noopener noreferrer">
+								ラボのサイトへ
 							</a>
-						</p>
+						</section>
 					)}
 				</div>
 			</>
 		) : (
 			<>
 				<section class="world-hero" data-parallax>
-					<div class="world-art" style={`view-transition-name: world-${lab.id}`}>
+					<div class="world-art" style={`view-transition-name: gate-${lab.id}`}>
 						{lab.data.hero_image ? (
 							<Image image={lab.data.hero_image} />
 						) : (
@@ -102,59 +122,91 @@ const works = lab.data.works ?? [];
 						)}
 					</div>
 					<div class="container world-title">
-						<a class="back-link enter" href="/">← 城へ戻る</a>
-						<span class="eyebrow enter">Welcome to</span>
-						<h1 class="enter enter-2" {...lab.edit.title}>
+						<div class="world-topline">
+							<a class="back-link" href="/">← Back to the castle</a>
+							<span class="gate-count">GATE {numeral} / {gateNumeral(ordered.length - 1)}</span>
+						</div>
+						<p class="eyebrow rise">Welcome to — {worldEn}</p>
+						<h1 class="rise rise-2" {...lab.edit.title}>
 							{lab.data.title}
 						</h1>
-						{lab.data.tagline && (
-							<p class="world-tagline enter enter-3" {...lab.edit.tagline}>
-								{lab.data.tagline}
-							</p>
-						)}
-						{lab.data.lab_status && (
-							<span class="badge enter enter-3" data-status={lab.data.lab_status}>
-								{lab.data.lab_status}
-							</span>
-						)}
+						<div class="world-sub rise rise-3">
+							{lab.data.tagline && <p {...lab.edit.tagline}>{lab.data.tagline}</p>}
+							<Status status={lab.data.lab_status} />
+							{lab.data.world === "strings" && (
+								<button type="button" class="button-ghost" data-pluck>
+									弦を弾く
+								</button>
+							)}
+						</div>
 					</div>
 				</section>
 
-				<div class="container world-body">
-					<section class="panel prose enter enter-3">
-						<PortableText value={lab.data.content} />
-						{lab.data.lab_url && (
-							<p>
-								<a href={lab.data.lab_url} target="_blank" rel="noopener noreferrer">
-									ラボの外へ →
-								</a>
-							</p>
-						)}
+				<div class="container">
+					<section class="section two">
+						<div class="two-head">
+							<p class="eyebrow">01 — What this world is</p>
+							<h2>この世界について</h2>
+						</div>
+						<div class="prose">
+							<PortableText value={lab.data.content} />
+							{lab.data.name_en && <p class="en">{lab.data.name_en}</p>}
+						</div>
 					</section>
 
 					{works.length > 0 && (
 						<section class="section">
-							<span class="eyebrow">Inside this world</span>
-							<h2>この世界でやっていること</h2>
-							<div class="grid">
-								{works.map((w) => (
-									<article class="panel work">
-										{w.state && (
-											<span class="badge" data-status={w.state}>
-												{w.state}
-											</span>
-										)}
-										<h3>{w.link ? <a href={w.link}>{w.name}</a> : w.name}</h3>
-										{w.summary && <p>{w.summary}</p>}
+							<p class="eyebrow">02 — Rooms in this world</p>
+							<h2 class="rooms-title">この世界の部屋</h2>
+							<div class="grid rooms">
+								{works.map((w, i) => (
+									<article class="frame room">
+										<div class="frame-inner">
+											<div class="room-top">
+												<span class="room-no">ROOM {gateNumeral(i)}</span>
+												<span class="room-state">{statusInfo(w.state).en}</span>
+											</div>
+											<h3>{w.link ? <a href={w.link}>{w.name}</a> : w.name}</h3>
+											{w.summary && <p>{w.summary}</p>}
+										</div>
 									</article>
 								))}
 							</div>
 						</section>
 					)}
 
-					<p class="return">
-						<a href="/#gates">← ほかの門へ</a>
-					</p>
+					{lab.data.lab_url && (
+						<section class="section">
+							<div class="frame">
+								<div class="frame-inner outside">
+									<div>
+										<h2>{lab.data.title} を開く</h2>
+										<p class="meta">本体は、ラボの外にあります。</p>
+									</div>
+									<a class="button" href={lab.data.lab_url} rel="noopener noreferrer">
+										ラボの外へ <span aria-hidden="true">→</span>
+									</a>
+								</div>
+							</div>
+						</section>
+					)}
+
+					<nav class="section gates-nav" aria-label="ほかの門">
+						{prev ? (
+							<a href={`/labs/${prev.id}`}>
+								<span class="nav-label">← Previous gate {gateNumeral(position - 1)}</span>
+								<span class="nav-name">{prev.data.title}</span>
+							</a>
+						) : (
+							<span />
+						)}
+						{next && (
+							<a class="next" href={`/labs/${next.id}`}>
+								<span class="nav-label">Next gate {gateNumeral(position + 1)} →</span>
+								<span class="nav-name">{next.data.title}</span>
+							</a>
+						)}
+					</nav>
 				</div>
 			</>
 		)
@@ -162,6 +214,7 @@ const works = lab.data.works ?? [];
 </Base>
 
 <script>
+	// Gentle pointer parallax on the world art, skipped for reduced motion.
 	const hero = document.querySelector<HTMLElement>("[data-parallax]");
 	if (hero && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
 		hero.addEventListener("pointermove", (e) => {
@@ -170,22 +223,27 @@ const works = lab.data.works ?? [];
 			hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
 		});
 	}
+	// Ring the strings again: alternate between two identical animations so it restarts.
+	document.querySelector("[data-pluck]")?.addEventListener("click", () => {
+		document.querySelector(".world-art svg")?.classList.toggle("replay");
+	});
 </script>
 
 <style>
-	/* ---------- immersive world ---------- */
+	/* ---------- world ---------- */
 	.world-hero {
 		position: relative;
-		min-height: min(88vh, 820px);
+		min-height: min(88vh, 800px);
 		display: flex;
 		align-items: flex-end;
 		overflow: hidden;
+		border-bottom: 1px solid var(--line);
 	}
 
 	.world-art {
 		position: absolute;
 		inset: -3%;
-		transform: translate(calc(var(--mx, 0) * -28px), calc(var(--my, 0) * -18px)) scale(1.02);
+		transform: translate(calc(var(--mx, 0) * -24px), calc(var(--my, 0) * -16px));
 		transition: transform 0.4s ease-out;
 	}
 
@@ -199,152 +257,304 @@ const works = lab.data.works ?? [];
 		content: "";
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(180deg, rgba(7, 8, 12, 0) 35%, rgba(7, 8, 12, 0.7) 75%, var(--ink) 100%);
+		background: linear-gradient(180deg, rgba(11, 10, 9, 0) 40%, var(--ink) 96%);
 		pointer-events: none;
 	}
 
 	.world-title {
 		position: relative;
 		z-index: 2;
-		padding-bottom: 48px;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		padding-bottom: 64px;
+	}
+
+	.world-topline {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-bottom: 24px;
+	}
+
+	.gate-count {
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.3em;
+		color: var(--text-faint);
 	}
 
 	.world-title h1 {
-		margin: 6px 0;
-		font-size: clamp(2.4rem, 8vw, 5.2rem);
-		line-height: 1.1;
-		text-shadow: 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent);
+		margin: 0;
+		font-size: clamp(3rem, 9vw, 6.5rem);
+		line-height: 1.04;
 	}
 
-	.world-tagline {
-		margin: 0 0 14px;
+	.world-sub {
+		display: flex;
+		align-items: center;
+		gap: 16px 24px;
+		flex-wrap: wrap;
+	}
+
+	.world-sub p {
+		margin: 0;
 		font-family: var(--font-display);
-		font-size: clamp(1.05rem, 2.6vw, 1.45rem);
-		color: color-mix(in srgb, var(--accent) 35%, #ffffff);
+		font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+		color: color-mix(in srgb, var(--accent) 70%, #ffffff);
 	}
 
-	.world-body {
-		padding-bottom: 80px;
+	.world-sub .button-ghost {
+		min-height: 44px;
+		padding: 10px 20px;
+		border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+		color: var(--accent);
+		font-size: 14px;
 	}
 
-	.world-body > .panel {
-		margin-top: 8px;
+	.two {
+		display: grid;
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		gap: 72px;
+		align-items: start;
+	}
+
+	.two-head {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.two-head h2,
+	.rooms-title {
+		margin: 0;
+		font-size: clamp(2rem, 4vw, 2.75rem);
+	}
+
+	.rooms-title {
+		margin: 10px 0 40px;
+	}
+
+	.room {
 		border-color: color-mix(in srgb, var(--accent) 35%, transparent);
 	}
 
-	.work {
-		border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+	.room .frame-inner {
+		border-color: color-mix(in srgb, var(--accent) 18%, transparent);
 	}
 
-	.work h3 a {
+	.room-top {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.2em;
+		color: var(--text-faint);
+	}
+
+	.room-state {
+		color: var(--accent);
+	}
+
+	.room h3 {
+		margin: 0;
+		font-size: 28px;
+	}
+
+	.room h3 a {
+		color: var(--text-strong);
+	}
+
+	.room p {
+		margin: 0;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-muted);
+	}
+
+	.outside {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		padding: 48px;
+	}
+
+	.outside h2 {
+		margin: 0 0 6px;
+		font-size: 32px;
+	}
+
+	.gates-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+		border-top: 1px solid var(--line);
+		margin-top: 120px;
+		padding-top: 32px;
+	}
+
+	.gates-nav a {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 		color: var(--text);
 	}
 
-	.return {
-		margin-top: 48px;
+	.gates-nav .next {
+		text-align: right;
+		margin-left: auto;
+	}
+
+	.nav-label {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.25em;
+		text-transform: uppercase;
+		color: var(--text-faint);
+	}
+
+	.nav-name {
+		font-family: var(--font-display);
+		font-size: 22px;
 	}
 
 	/* ---------- business ---------- */
 	.biz-hero {
+		background: #ffffff;
 		border-bottom: 1px solid var(--line);
-		background: #f7f9fc;
 	}
 
-	.biz-hero-inner {
+	.biz-hero-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-		gap: 32px;
+		grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+		gap: 64px;
 		align-items: center;
-		padding-top: 40px;
-		padding-bottom: 40px;
+		padding-top: 72px;
+		padding-bottom: 72px;
 	}
 
-	.biz-hero h1 {
-		margin: 6px 0 8px;
-		font-size: clamp(2rem, 5vw, 2.8rem);
+	.biz-copy {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 18px;
+	}
+
+	.biz-copy .back-link {
+		color: var(--text-faint);
+		letter-spacing: 0.15em;
+	}
+
+	.biz-copy h1 {
+		margin: 0;
+		font-size: clamp(2.4rem, 5vw, 3.75rem);
 	}
 
 	.biz-lead {
-		font-size: 1.1rem;
+		margin: 0;
+		font-size: 20px;
+		line-height: 1.8;
 		color: var(--text-muted);
-		margin: 0 0 12px;
 	}
 
-	.biz-art {
-		border-radius: 12px;
-		overflow: hidden;
+	.biz-figure {
+		margin: 0;
+		padding: 28px;
 		border: 1px solid var(--line);
-		aspect-ratio: 16 / 10;
+		background: var(--ink);
+		color: var(--accent);
+	}
+
+	.biz-figure :global(.motif) {
+		height: 240px;
 	}
 
 	.biz-body {
-		padding-top: 40px;
-		padding-bottom: 80px;
 		display: grid;
-		gap: 40px;
+		gap: 64px;
+		padding-top: 72px;
 	}
 
 	.biz-body h2 {
-		font-size: 1.35rem;
-		margin: 0 0 12px;
-		padding-bottom: 8px;
-		border-bottom: 2px solid var(--accent);
-		display: inline-block;
+		margin: 0 0 20px;
+		font-size: 30px;
 	}
 
-	.biz-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 0.95rem;
-	}
-
-	.biz-table th,
-	.biz-table td {
-		text-align: left;
-		padding: 12px 14px;
-		border-bottom: 1px solid var(--line);
-		vertical-align: top;
-	}
-
-	.biz-table th {
+	.biz-body .prose {
 		color: var(--text-muted);
-		font-weight: 500;
-		font-size: 0.85rem;
-		background: #f7f9fc;
 	}
 
-	.biz-button {
-		display: inline-block;
-		padding: 12px 24px;
-		border-radius: 8px;
-		background: var(--accent);
-		color: #ffffff;
+	.table-wrap {
+		overflow-x: auto;
+		border: 1px solid var(--line);
+		background: #ffffff;
+	}
+
+	table {
+		width: 100%;
+		min-width: 560px;
+		border-collapse: collapse;
+		font-size: 15px;
+	}
+
+	th,
+	td {
+		padding: 16px 20px;
+		text-align: left;
+		vertical-align: top;
+		border-top: 1px solid var(--line);
+	}
+
+	th {
+		border-top: 0;
+		background: var(--ink-deep);
+		font-weight: 500;
+		color: var(--text-muted);
+	}
+
+	td {
+		color: var(--text-muted);
+	}
+
+	td.strong {
+		color: var(--text);
 		font-weight: 700;
 	}
 
-	.biz-button:hover {
-		text-decoration: none;
-		filter: brightness(1.08);
+	.biz-cta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+		flex-wrap: wrap;
+		padding: 48px;
+		background: var(--accent);
 	}
 
-	@media (max-width: 720px) {
-		.biz-hero-inner {
+	.biz-cta h2 {
+		margin: 0;
+		color: #ffffff;
+	}
+
+	.biz-cta .button {
+		background: #ffffff;
+		color: var(--accent);
+	}
+
+	@media (max-width: 860px) {
+		.two,
+		.biz-hero-grid {
 			grid-template-columns: 1fr;
+			gap: 32px;
 		}
 
-		.biz-table thead {
-			display: none;
-		}
-
-		.biz-table tr {
-			display: grid;
-			padding: 10px 0;
-			border-bottom: 1px solid var(--line);
-		}
-
-		.biz-table td {
-			border: 0;
-			padding: 2px 0;
+		.outside,
+		.biz-cta {
+			padding: 28px;
 		}
 	}
 </style>

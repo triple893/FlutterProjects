@@ -1,114 +1,125 @@
 ---
 import { Image } from "emdash/ui";
-import WorldArt from "./WorldArt.astro";
+import GateMotif from "./GateMotif.astro";
+import Status from "./Status.astro";
+import { gateNumeral } from "../utils/format";
 import type { Lab } from "../../emdash-env";
 
 interface Props {
 	lab: { id: string; data: Lab; edit: Record<string, Record<string, string>> };
+	/** Zero-based position among the gates, shown as 壱, 弐, 参… */
+	index: number;
 }
 
-const { lab } = Astro.props;
-const accent = lab.data.accent ?? undefined;
+const { lab, index } = Astro.props;
+// The fan portal's stage keeps its own vermilion; every other gate is gold.
+const tinted = lab.data.world === "stage";
 ---
 
-<a class="gate" href={`/labs/${lab.id}`} style={accent ? `--accent:${accent}` : undefined}>
-	<div class="thumb" style={`view-transition-name: world-${lab.id}`}>
+<a
+	class:list={["gate frame", { tinted }]}
+	href={`/labs/${lab.id}`}
+	style={`view-transition-name: gate-${lab.id}`}
+>
+	<div class="frame-inner">
+		<div class="gate-top">
+			<span class="numeral">{gateNumeral(index)}</span>
+			<Status status={lab.data.lab_status} />
+		</div>
 		{
 			lab.data.thumbnail ? (
-				<div {...lab.edit.thumbnail}>
+				<div class="thumb" {...lab.edit.thumbnail}>
 					<Image image={lab.data.thumbnail} />
 				</div>
 			) : (
-				<WorldArt world={lab.data.world} accent={accent} seed={lab.id} variant="thumb" />
+				<GateMotif world={lab.data.world} label={`${lab.data.title}の紋`} />
 			)
 		}
-	</div>
-	<div class="label">
-		{lab.data.lab_status && <span class="badge" data-status={lab.data.lab_status}>{lab.data.lab_status}</span>}
-		<h3 {...lab.edit.title}>{lab.data.title}</h3>
-		{lab.data.tagline && <p {...lab.edit.tagline}>{lab.data.tagline}</p>}
-		<span class="enter-cue" aria-hidden="true">入る →</span>
+		<div class="gate-text">
+			<h3 {...lab.edit.title}>{lab.data.title}</h3>
+			{lab.data.name_en && <p class="gate-en" {...lab.edit.name_en}>{lab.data.name_en}</p>}
+			{lab.data.tagline && <p class="gate-tagline" {...lab.edit.tagline}>{lab.data.tagline}</p>}
+		</div>
 	</div>
 </a>
 
 <style>
 	.gate {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		border-radius: var(--radius);
-		overflow: hidden;
-		background: #0b0c12;
-		border: 1px solid var(--line);
-		color: var(--text);
-		isolation: isolate;
+		color: var(--gold);
 		transition:
-			transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
-			border-color 0.35s ease,
-			box-shadow 0.35s ease;
+			border-color 0.3s ease,
+			transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 	}
 
-	.gate:hover,
-	.gate:focus-visible {
-		text-decoration: none;
-		transform: translateY(-6px);
-		border-color: var(--accent);
-		box-shadow:
-			0 18px 50px -20px var(--accent),
-			0 0 0 1px var(--accent);
+	.gate:hover {
+		border-color: var(--gold);
+		transform: translateY(-4px);
+	}
+
+	.gate.tinted {
+		color: #e46a4f;
+		border-color: rgba(210, 70, 43, 0.45);
+		background: #140b0a;
+	}
+
+	.gate.tinted .frame-inner {
+		border-color: rgba(210, 70, 43, 0.25);
+	}
+
+	.gate-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.numeral {
+		font-family: var(--font-display);
+		font-size: 28px;
+		line-height: 1;
+		transition: color 0.3s ease;
+	}
+
+	.gate:hover .numeral {
+		color: var(--shu);
 	}
 
 	.thumb {
-		aspect-ratio: 16 / 10;
+		height: 160px;
 		overflow: hidden;
 	}
 
-	.thumb :global(svg),
 	.thumb :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 	}
 
-	.gate:hover .thumb :global(svg),
-	.gate:hover .thumb :global(img) {
-		transform: scale(1.08);
+	.gate-text {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 
-	.label {
-		position: relative;
-		padding: 16px 18px 18px;
-		background: linear-gradient(180deg, rgba(11, 12, 18, 0) 0%, #0b0c12 30%);
-		margin-top: -40px;
-	}
-
-	.label h3 {
-		margin: 6px 0 2px;
-		font-size: 1.15rem;
-	}
-
-	.label p {
+	h3 {
 		margin: 0;
+		font-weight: 700;
+		font-size: 26px;
+		line-height: 1.35;
+	}
+
+	.gate-en {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--text-faint);
+	}
+
+	.gate-tagline {
+		margin: 8px 0 0;
+		font-size: 14px;
+		line-height: 1.8;
 		color: var(--text-muted);
-		font-size: 0.88rem;
-	}
-
-	.enter-cue {
-		position: absolute;
-		right: 18px;
-		bottom: 16px;
-		color: var(--accent);
-		font-size: 0.85rem;
-		opacity: 0;
-		transform: translateX(-6px);
-		transition:
-			opacity 0.3s ease,
-			transform 0.3s ease;
-	}
-
-	.gate:hover .enter-cue {
-		opacity: 1;
-		transform: none;
 	}
 </style>

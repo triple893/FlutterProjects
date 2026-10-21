@@ -1,6 +1,5 @@
 ---
 import { getEmDashCollection } from "emdash";
-import { Image } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
 import { formatDate } from "../../utils/format";
 
@@ -19,24 +18,22 @@ if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
 <Base title="開発日記" description="Don'z Lab の開発の記録">
 	<div class="container page">
-		<p class="eyebrow">Devlog</p>
-		<h1>開発日記</h1>
+		<p class="eyebrow rise">The Chronicle</p>
+		<h1 class="rise rise-2">開発日記</h1>
 
 		{
 			posts.length === 0 ? (
 				<p class="meta">まだ日記はありません。</p>
 			) : (
-				<div class="grid">
+				<div class="chronicle rise rise-3">
 					{posts.map((post) => (
-						<a class="panel" href={`/posts/${post.id}`}>
-							{post.data.featured_image && (
-								<div {...post.edit.featured_image}>
-									<Image image={post.data.featured_image} />
-								</div>
-							)}
-							<span class="meta">{formatDate(post.data.publishedAt)}</span>
-							<h3 {...post.edit.title}>{post.data.title}</h3>
-							{post.data.excerpt && <p {...post.edit.excerpt}>{post.data.excerpt}</p>}
+						<a class="entry" href={`/posts/${post.id}`}>
+							<span class="entry-date">{formatDate(post.data.publishedAt)}</span>
+							<span class="entry-text">
+								<span class="entry-title" {...post.edit.title}>{post.data.title}</span>
+								{post.data.excerpt && <span class="entry-excerpt" {...post.edit.excerpt}>{post.data.excerpt}</span>}
+							</span>
+							<span class="entry-arrow" aria-hidden="true">→</span>
 						</a>
 					))}
 				</div>
@@ -51,13 +48,75 @@ if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 
 <style>
 	.page {
-		padding-top: 48px;
-		padding-bottom: 80px;
+		padding-top: 72px;
+	}
+
+	h1 {
+		margin: 10px 0 40px;
+		font-size: clamp(2.4rem, 6vw, 4rem);
+	}
+
+	.chronicle {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--line);
+	}
+
+	.entry {
+		display: grid;
+		grid-template-columns: 140px minmax(0, 1fr) 32px;
+		gap: 24px;
+		align-items: center;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--line);
+		color: var(--text);
+	}
+
+	.entry-date {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		color: var(--text-faint);
+	}
+
+	.entry-text {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.entry-title {
+		font-family: var(--font-display);
+		font-size: 24px;
+	}
+
+	.entry-excerpt {
+		font-size: 14px;
+		color: var(--text-muted);
+	}
+
+	.entry-arrow {
+		font-size: 22px;
+		color: var(--gold);
+		transition: transform 0.25s ease;
+	}
+
+	.entry:hover .entry-arrow {
+		transform: translateX(6px);
 	}
 
 	.pager {
 		display: flex;
 		gap: 16px;
 		margin-top: 24px;
+	}
+
+	@media (max-width: 720px) {
+		.entry {
+			grid-template-columns: 1fr 24px;
+		}
+
+		.entry-date {
+			grid-column: 1 / -1;
+		}
 	}
 </style>
