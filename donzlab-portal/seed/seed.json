@@ -459,12 +459,12 @@
 				}
 			},
 			{
-				"id": "chord-sheet-maker",
-				"slug": "chord-sheet-maker",
+				"id": "donz-music-lab",
+				"slug": "donz-music-lab",
 				"status": "published",
 				"data": {
-					"title": "ChordSheetMaker",
-					"tagline": "耳コピの世界。音からタブ譜を起こす",
+					"title": "Don'z MusicLab",
+					"tagline": "音楽の世界。耳コピからタブ譜、作曲まで",
 					"lab_status": "開発中",
 					"world": "strings",
 					"accent": "#f0a24b",
@@ -478,82 +478,36 @@
 								{
 									"_type": "span",
 									"_key": "s0",
-									"text": "耳コピを手伝う Web ツール。音源からタブ譜を自動で作る。"
-								}
-							]
-						},
-						{
-							"_type": "block",
-							"_key": "b1",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"_key": "s1",
-									"text": "マイナー曲や地下アイドル曲のように、楽譜が出回っていない曲に強いのが売り。"
+									"text": "音楽にまつわる道具と制作を、AI と一緒に進める世界。耳コピした音源をタブ譜に起こす道具も、作曲も、すべてこの中にある。"
 								}
 							]
 						}
 					],
 					"works": [
 						{
-							"name": "タブ譜の自動生成",
-							"summary": "音源からギター・ベースのタブ譜を起こす",
+							"name": "ChordSheetMaker",
+							"summary": "耳コピした音源を、ギター・ベースのタブ譜に起こす道具。楽譜が出回っていない曲に強い",
 							"state": "開発中"
 						},
 						{
-							"name": "マイナー曲・地下アイドル曲対応",
-							"summary": "楽譜が手に入らない曲こそ、このツールの出番",
+							"name": "作曲の部屋",
+							"summary": "作曲エージェントと一緒に、詞や情景から曲の種をつくり、形にしていく",
 							"state": "開発中"
 						}
 					]
 				}
 			},
 			{
-				"id": "donz-music-lab",
-				"slug": "donz-music-lab",
+				"id": "cooking-lab",
+				"slug": "cooking-lab",
 				"status": "published",
 				"data": {
-					"title": "DonzMusicLab",
-					"tagline": "音楽の世界。AI と曲をつくる",
-					"lab_status": "開発中",
-					"world": "sound",
-					"accent": "#b88cff",
-					"sort_order": 30,
-					"content": [
-						{
-							"_type": "block",
-							"_key": "b0",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"_key": "s0",
-									"text": "作曲エージェントを中心に、音楽づくりを AI と進めるラボ。"
-								}
-							]
-						}
-					],
-					"works": [
-						{
-							"name": "作曲エージェント",
-							"summary": "詞や情景から曲の種をつくる",
-							"state": "開発中"
-						}
-					]
-				}
-			},
-			{
-				"id": "pasta-lab",
-				"slug": "pasta-lab",
-				"status": "published",
-				"data": {
-					"title": "父ちゃんのパスタAI研究所",
+					"title": "Don'z 料理Lab",
 					"tagline": "台所の世界。レシピを AI と研究する",
 					"lab_status": "準備中",
 					"world": "kitchen",
 					"accent": "#f2795b",
-					"sort_order": 40,
+					"sort_order": 30,
 					"content": [
 						{
 							"_type": "block",
@@ -1225,7 +1179,7 @@
 								{
 									"_type": "span",
 									"_key": "s3",
-									"text": "ツール開発、アプリ開発、音楽、料理、発信、LLM の比較研究まで、テーマごとにラボを立てて活動しています。"
+									"text": "音楽、料理、発信、アプリ開発、LLM の比較研究まで、テーマごとにラボを立てて活動しています。"
 								}
 							]
 						},
