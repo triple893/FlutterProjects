@@ -60,8 +60,28 @@ pnpm dev                     # http://127.0.0.1:4321
 
 ## 本番（Cloudflare）へ出すとき
 
-`wrangler.jsonc` の D1・R2 を作成してから `pnpm deploy`。Workers の無料プランで動く。
-公開範囲は Cloudflare Access などで先に絞っておく。
+Workers の無料プランで動く。ドメインは **`donz-lab.com`（ハイフンあり）**。
+
+### 事前に必要なもの
+
+- `donz-lab.com` が Cloudflare のアカウントでゾーンとして管理されていること（ネームサーバーが Cloudflare を向いていること）
+- クラウド作業環境の設定
+  - Network access の Allowed domains に `api.cloudflare.com`
+  - Network secrets（または環境変数）に `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID`
+- API トークンの権限
+  - Account：Workers Scripts・D1・Workers R2 Storage・Access: Apps and Policies を Edit
+  - Zone（donz-lab.com）：DNS・Workers Routes を Edit
+
+### 手順
+
+1. `npx wrangler d1 create donzlab-portal` と `npx wrangler r2 bucket create donzlab-portal-media` を実行し、出力された D1 の `database_id` を `wrangler.jsonc` に書く
+2. **お試し中**は `preview.donz-lab.com` をカスタムドメインにする（`wrangler.jsonc` の `routes` に `{ "pattern": "preview.donz-lab.com", "custom_domain": true }`）
+3. `pnpm deploy`
+4. Cloudflare Access で `preview.donz-lab.com` にアプリを作り、丼ちゃんのメールアドレスだけを許可する
+5. 本番の管理画面でセットアップ（管理者はパスキー）→ シードの適用 → `scripts/enable-ja-search.sh <本番URL>` で日本語検索を有効化
+6. **一般公開するとき**は、カスタムドメインを `donz-lab.com` に付け替え、Access を外す。決定は `docs/DECISION_LOG.md` に記録する
+
+AI 用の MCP トークンは、本番では Contributor ロールのユーザーで発行する（公開は人間だけ）。
 
 ## チェック
 
