@@ -1,0 +1,473 @@
+---
+import { getEmDashCollection, getSiteSettings } from "emdash";
+import Base from "../layouts/Base.astro";
+import LabCard from "../components/LabCard.astro";
+import AgentCard from "../components/AgentCard.astro";
+import { resolveStarterSiteIdentity } from "../utils/site-identity";
+import { bySortOrder, countNumeral, formatDate } from "../utils/format";
+
+const [labsResult, agentsResult, postsResult, settings] = await Promise.all([
+	getEmDashCollection("labs", { limit: 50 }),
+	getEmDashCollection("agents", { limit: 50 }),
+	getEmDashCollection("posts", { orderBy: { published_at: "desc" }, limit: 4 }),
+	getSiteSettings(),
+]);
+if (Astro.cache?.enabled) {
+	for (const r of [labsResult, agentsResult, postsResult]) Astro.cache.set(r.cacheHint);
+}
+
+const labs = [...labsResult.entries].sort(bySortOrder);
+const agents = [...agentsResult.entries].sort(bySortOrder);
+const temple = agents.filter((a) => a.data.layer === "天");
+const town = agents.filter((a) => a.data.layer === "街");
+const aiEngines = [...new Set(agents.map((a) => a.data.engine).filter(Boolean))];
+const posts = postsResult.entries;
+const { siteTitle, siteTagline } = resolveStarterSiteIdentity(settings);
+---
+
+<Base title={siteTitle} description={siteTagline} mode="castle">
+	<section class="hero">
+		<svg class="hero-art" viewBox="0 0 1440 820" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+			<g fill="none" stroke="var(--gold)" stroke-width="1" opacity="0.55">
+				<circle cx="1040" cy="410" r="300"></circle>
+				<circle class="orbit" cx="1040" cy="410" r="240" stroke-dasharray="2 8"></circle>
+				<circle cx="1040" cy="410" r="170"></circle>
+				<circle cx="1040" cy="410" r="60"></circle>
+				<path d="M1252 198l-60 60M828 622l60-60M828 198l60 60M1252 622l-60-60"></path>
+			</g>
+			<g fill="none" stroke="var(--gold)" stroke-width="1" opacity="0.28">
+				<path d="M0 160h320v120h180v-60h160"></path>
+				<path d="M0 540h220v-80h240v160h200"></path>
+				<path d="M1440 120h-140v180h-60"></path>
+				<path d="M1440 700h-200v-90h-110"></path>
+				<path d="M560 820v-120h120v-90"></path>
+				<path d="M1040 110v120M1040 710v-120M740 410h120M1340 410h-120"></path>
+			</g>
+			<!-- Law 1: current runs along each line, from the edge into the core -->
+			<g fill="none" stroke="var(--gold-soft)" stroke-width="1.6">
+				<path class="current" d="M0 160h320v120h180v-60h160"></path>
+				<path class="current" d="M0 540h220v-80h240v160h200"></path>
+				<path class="current" d="M1440 120h-140v180h-60"></path>
+				<path class="current" d="M1440 700h-200v-90h-110"></path>
+				<path class="current" d="M560 820v-120h120v-90"></path>
+				<path class="current" d="M1040 110v120M1040 710v-120M740 410h120M1340 410h-120"></path>
+			</g>
+			<circle class="heart" cx="1040" cy="410" r="14" fill="var(--shu)"></circle>
+		</svg>
+
+		<div class="container hero-grid">
+			<div class="tategaki" aria-hidden="true">創る城</div>
+			<div class="hero-copy">
+				<p class="eyebrow rise">AI Agent Laboratory — Made in Japan</p>
+				<h1 class="rise rise-2">AIと人が、<br />ともに創る城。</h1>
+				<p class="hero-en rise rise-3">A castle where AI agents and a maker build things together.</p>
+				<p class="hero-lead rise rise-3">
+					{countNumeral(aiEngines.length)}つの AI と{countNumeral(labs.length)}つのラボ。それぞれの門の向こうに、ひとつずつ違う世界があります。日本の小さな工房から、世界へ。
+				</p>
+				<div class="hero-actions rise rise-4">
+					<a class="button" href="#gates">門をくぐる <span class="mono-sub">Enter the gates</span></a>
+					<a class="button-ghost" href="/agents">神殿と街を見る</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="stats">
+			<div class="container stats-row">
+				<div><span class="stat-num">{labs.length}</span><span>ラボ <span class="mono-sub">Labs</span></span></div>
+				<div><span class="stat-num">{agents.length}</span><span>エージェント <span class="mono-sub">Agents</span></span></div>
+				<div><span class="stat-num">{aiEngines.length}</span><span>AI — {aiEngines.join(" / ")}</span></div>
+			</div>
+		</div>
+	</section>
+
+	<div class="container">
+		<section class="section" id="gates">
+			<div class="section-head">
+				<div>
+					<p class="eyebrow">01 — The Gates</p>
+					<h2>{countNumeral(labs.length)}つの門</h2>
+				</div>
+				<p class="section-note">門をくぐると、そのラボの世界に入ります。<br /><span class="en">Step through a gate to enter its world.</span></p>
+			</div>
+			<div class="grid">
+				{labs.map((lab, i) => <LabCard lab={lab} index={i} />)}
+			</div>
+		</section>
+
+		<section class="section" id="codex">
+			<div class="section-head">
+				<div>
+					<p class="eyebrow">02 — The Codex</p>
+					<h2>神殿と街</h2>
+				</div>
+				<a href="/agents">エージェント図鑑 →</a>
+			</div>
+			<div class="split">
+				<div class="half temple">
+					<div class="half-title"><span class="glyph">天</span><span class="eyebrow">The Temple — 常設の法</span></div>
+					<p>すべてのラボに共通する法。ギリシャ神話の神々の名を持ち、黒地に金の回路紋と光輪をまとう。</p>
+					<div class="medallions">{temple.slice(0, 3).map((a) => <AgentCard agent={a} />)}</div>
+				</div>
+				<div class="half town">
+					<div class="half-title"><span class="glyph">街</span><span class="eyebrow">The Town — 職人ギルド</span></div>
+					<p>ラボごとの実務を担う、和の職人と商人たち。仕事ごとに雇われ、灯りの下で手を動かす。</p>
+					<div class="medallions">{town.slice(0, 3).map((a) => <AgentCard agent={a} />)}</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="chronicle">
+			<div class="section-head">
+				<div>
+					<p class="eyebrow">03 — The Chronicle</p>
+					<h2>開発日記</h2>
+				</div>
+				<a href="/posts">すべて読む →</a>
+			</div>
+			{
+				posts.length === 0 ? (
+					<p class="meta">まだ日記はありません。</p>
+				) : (
+					<div class="chronicle">
+						{posts.map((post) => (
+							<a class="entry" href={`/posts/${post.id}`}>
+								<span class="entry-date">{formatDate(post.data.publishedAt)}</span>
+								<span class="entry-text">
+									<span class="entry-title" {...post.edit.title}>{post.data.title}</span>
+									{post.data.excerpt && <span class="entry-excerpt" {...post.edit.excerpt}>{post.data.excerpt}</span>}
+								</span>
+								<span class="entry-arrow" aria-hidden="true">→</span>
+							</a>
+						))}
+					</div>
+				)
+			}
+		</section>
+	</div>
+</Base>
+
+<style>
+	.hero {
+		position: relative;
+		overflow: hidden;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.hero-art {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.hero-grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: 160px minmax(0, 1fr);
+		gap: 56px;
+		align-items: start;
+		padding-top: 120px;
+		padding-bottom: 140px;
+	}
+
+	.tategaki {
+		writing-mode: vertical-rl;
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: 132px;
+		line-height: 1;
+		letter-spacing: 0.08em;
+		color: var(--gold);
+	}
+
+	.hero-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 26px;
+		max-width: 640px;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: clamp(2.8rem, 7vw, 4.75rem);
+		line-height: 1.18;
+	}
+
+	.hero-en {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+		line-height: 1.6;
+		color: var(--gold-soft);
+	}
+
+	.hero-lead {
+		margin: 0;
+		line-height: 2;
+		color: var(--text-muted);
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-top: 8px;
+	}
+
+	.mono-sub {
+		font-family: var(--font-mono);
+		font-weight: 400;
+		font-size: 11px;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: inherit;
+		opacity: 0.85;
+	}
+
+	.stats {
+		position: relative;
+		border-top: 1px solid var(--line);
+	}
+
+	.stats-row {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.stats-row > div {
+		display: flex;
+		align-items: baseline;
+		gap: 14px;
+		padding: 26px 0 26px 28px;
+		font-size: 14px;
+		color: var(--text-muted);
+		border-left: 1px solid var(--line);
+	}
+
+	.stats-row > div:first-child {
+		padding-left: 0;
+		border-left: 0;
+	}
+
+	.stat-num {
+		font-family: var(--font-display);
+		font-size: 44px;
+		line-height: 1;
+		color: var(--text-strong);
+	}
+
+	.section-note {
+		margin: 0;
+		max-width: 420px;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-muted);
+	}
+
+	.split {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		border: 1px solid var(--line);
+	}
+
+	.half {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding: 48px;
+	}
+
+	.half p {
+		margin: 0;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-muted);
+	}
+
+	.temple {
+		background: #0e0d0b;
+	}
+
+	.town {
+		background: #17100b;
+		border-left: 1px solid var(--line);
+	}
+
+	.half-title {
+		display: flex;
+		align-items: baseline;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	.glyph {
+		font-family: var(--font-display);
+		font-size: 64px;
+		line-height: 1;
+		color: var(--gold);
+	}
+
+	.town .glyph,
+	.town .eyebrow {
+		color: #e58a55;
+	}
+
+	.temple .eyebrow {
+		color: var(--text-faint);
+	}
+
+	.medallions {
+		display: flex;
+		gap: 28px;
+		flex-wrap: wrap;
+	}
+
+	.chronicle {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--line);
+	}
+
+	.entry {
+		display: grid;
+		grid-template-columns: 140px minmax(0, 1fr) 32px;
+		gap: 24px;
+		align-items: center;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--line);
+		color: var(--text);
+	}
+
+	.entry-date {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		color: var(--text-faint);
+	}
+
+	.entry-text {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.entry-title {
+		font-family: var(--font-display);
+		font-size: 24px;
+	}
+
+	.entry-excerpt {
+		font-size: 14px;
+		color: var(--text-muted);
+	}
+
+	.entry-arrow {
+		font-size: 22px;
+		color: var(--gold);
+		transition: transform 0.25s ease;
+	}
+
+	.entry:hover .entry-arrow {
+		transform: translateX(6px);
+	}
+
+	/* Law 1 (current flows in), the castle's slow orbit, and its heartbeat */
+	.current {
+		stroke-dasharray: 6 22;
+		animation: current 3.2s linear infinite;
+	}
+
+	@keyframes current {
+		to {
+			stroke-dashoffset: -112;
+		}
+	}
+
+	.orbit {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: orbit 90s linear infinite;
+	}
+
+	@keyframes orbit {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.heart {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: heart 1s ease-in-out infinite;
+	}
+
+	@keyframes heart {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		15% {
+			transform: scale(1.25);
+		}
+		30% {
+			transform: scale(1);
+		}
+		45% {
+			transform: scale(1.12);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.current,
+		.orbit,
+		.heart {
+			animation: none;
+		}
+	}
+
+	@media (max-width: 860px) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+			padding-top: 72px;
+			padding-bottom: 88px;
+		}
+
+		.tategaki {
+			display: none;
+		}
+
+		.split {
+			grid-template-columns: 1fr;
+		}
+
+		.town {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.half {
+			padding: 32px 24px;
+		}
+
+		.stats-row {
+			grid-template-columns: 1fr;
+		}
+
+		.stats-row > div {
+			padding-left: 0;
+			border-left: 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.stats-row > div:first-child {
+			border-top: 0;
+		}
+
+		.entry {
+			grid-template-columns: 1fr 24px;
+		}
+
+		.entry-date {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

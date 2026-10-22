@@ -1,0 +1,380 @@
+---
+import { getEmDashCollection } from "emdash";
+import { Image } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import { bySortOrder } from "../../utils/format";
+
+const { entries, cacheHint } = await getEmDashCollection("agents", { limit: 200 });
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const agents = [...entries].sort(bySortOrder);
+const by = (layer: string) => agents.filter((a) => (a.data.layer ?? "街") === layer);
+const hq = by("本陣");
+const temple = by("天");
+const town = by("街");
+const awaiting = by("復活待ち");
+const initial = (name: string) => name.slice(0, 1);
+---
+
+<Base title="神殿と街" description="Don'z Lab で働く AI エージェントたちの図鑑">
+	<section class="container intro">
+		<p class="eyebrow rise">The Temple and the Town</p>
+		<h1 class="rise rise-2">神殿と街</h1>
+		<p class="lead rise rise-3">
+			天には法が、街には職人が。名前を増やすときは、まず天か街かを決める。<br />
+			<span class="en">The agent codex of Don'z Lab.</span>
+		</p>
+	</section>
+
+	{
+		hq.length > 0 && (
+			<section class="container block">
+				<div class="block-head">
+					<span class="block-title">本陣</span>
+					<span class="eyebrow faint">Headquarters — 丼ちゃんの両腕</span>
+				</div>
+				<div class="hq">
+					{hq.map((a) => (
+						<a class="hq-card" href={`/agents/${a.id}`}>
+							<span class="eyebrow">{[a.data.epithet, a.data.engine].filter(Boolean).join(" · ")}</span>
+							<span class="hq-name" {...a.edit.title}>{a.data.title}</span>
+							{a.data.catchphrase && <span class="hq-line">{a.data.catchphrase}</span>}
+						</a>
+					))}
+				</div>
+			</section>
+		)
+	}
+
+	{
+		temple.length > 0 && (
+			<section class="temple">
+				<div class="container">
+					<div class="block-head">
+						<span class="glyph">天</span>
+						<span class="eyebrow faint">The Temple — 常設の法 / ギリシャ神話の神々</span>
+					</div>
+					<div class="deities">
+						{temple.map((a) => (
+							<a class="deity" href={`/agents/${a.id}`}>
+								<span class="halo" style={`view-transition-name: agent-${a.id}`} {...a.edit.portrait}>
+									{a.data.portrait ? <Image image={a.data.portrait} /> : <span aria-hidden="true">{initial(a.data.title)}</span>}
+								</span>
+								{a.data.name_en && <span class="eyebrow">{a.data.name_en}</span>}
+								<span class="deity-name" {...a.edit.title}>{a.data.title}</span>
+								{a.data.epithet && <span class="deity-epithet">{a.data.epithet}</span>}
+								{a.data.catchphrase && <span class="deity-line">「{a.data.catchphrase}」</span>}
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	{
+		town.length > 0 && (
+			<section class="town">
+				<div class="container">
+					<div class="block-head">
+						<span class="glyph">街</span>
+						<span class="eyebrow faint">The Town — 職人ギルド / 和の職人と商人</span>
+					</div>
+					<div class="roster">
+						{town.map((a) => (
+							<a class="row" href={`/agents/${a.id}`}>
+								<span class="lantern" style={`view-transition-name: agent-${a.id}`} {...a.edit.portrait}>
+									{a.data.portrait ? <Image image={a.data.portrait} /> : <span aria-hidden="true">{initial(a.data.title)}</span>}
+								</span>
+								<span class="row-text">
+									{a.data.epithet && <span class="eyebrow">{a.data.epithet}</span>}
+									<span class="row-name">
+										{a.data.title} <span class="row-role">{a.data.role}</span>
+									</span>
+									{a.data.catchphrase && <span class="row-line">{a.data.catchphrase}</span>}
+								</span>
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	{
+		awaiting.length > 0 && (
+			<section class="container block">
+				{awaiting.map((a) => (
+					<a class="awaiting" href={`/agents/${a.id}`}>
+						<span class="ghost" aria-hidden="true">{initial(a.data.title)}</span>
+						<span class="row-text">
+							<span class="eyebrow faint">Awaiting return — 復活待ち</span>
+							<span class="row-name">
+								{a.data.title} <span class="row-role">{a.data.epithet}</span>
+							</span>
+							<span class="row-line">{a.data.role}</span>
+						</span>
+					</a>
+				))}
+			</section>
+		)
+	}
+</Base>
+
+<style>
+	.intro {
+		padding-top: 96px;
+		padding-bottom: 64px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 18px;
+	}
+
+	.intro h1 {
+		margin: 0;
+		font-size: clamp(3rem, 9vw, 6rem);
+		line-height: 1.05;
+	}
+
+	.lead {
+		margin: 0;
+		max-width: 620px;
+		font-size: 17px;
+		line-height: 2;
+		color: var(--text-muted);
+	}
+
+	.faint {
+		color: var(--text-faint);
+	}
+
+	.block {
+		padding-top: 40px;
+		padding-bottom: 40px;
+	}
+
+	.block-head {
+		display: flex;
+		align-items: baseline;
+		gap: 18px;
+		flex-wrap: wrap;
+		margin-bottom: 32px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.block-title {
+		font-family: var(--font-display);
+		font-size: 40px;
+		color: var(--text-strong);
+	}
+
+	.glyph {
+		font-family: var(--font-display);
+		font-size: 72px;
+		line-height: 1;
+		color: var(--gold);
+	}
+
+	.hq {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+		gap: 24px;
+	}
+
+	.hq-card {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 28px;
+		border: 1px solid var(--line);
+		color: var(--text);
+		transition: border-color 0.3s ease;
+	}
+
+	.hq-card:hover {
+		border-color: var(--gold);
+	}
+
+	.hq-name {
+		font-family: var(--font-display);
+		font-size: 28px;
+	}
+
+	.hq-line {
+		font-size: 14px;
+		line-height: 1.8;
+		color: var(--text-muted);
+	}
+
+	.temple {
+		margin-top: 64px;
+		padding: 88px 0;
+		background: var(--ink-deep);
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
+
+	.temple .block-head {
+		border-bottom: 0;
+		margin-bottom: 48px;
+	}
+
+	.deities {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+		gap: 48px 40px;
+	}
+
+	.deity {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 12px;
+		color: var(--text);
+	}
+
+	.halo {
+		width: 220px;
+		height: 220px;
+		margin-bottom: 16px;
+		border-radius: 50%;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--gold);
+		background: #12100c;
+		font-family: var(--font-display);
+		font-size: 80px;
+		color: var(--gold-soft);
+		box-shadow:
+			0 0 0 10px var(--ink-deep),
+			0 0 0 11px rgba(201, 162, 74, 0.55),
+			0 0 70px rgba(201, 162, 74, 0.22);
+		transition: box-shadow 0.4s ease;
+	}
+
+	.deity:hover .halo {
+		box-shadow:
+			0 0 0 10px var(--ink-deep),
+			0 0 0 11px rgba(201, 162, 74, 0.9),
+			0 0 90px rgba(201, 162, 74, 0.4);
+	}
+
+	.halo :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.deity-name {
+		font-family: var(--font-display);
+		font-size: 32px;
+	}
+
+	.deity-epithet {
+		font-size: 14px;
+		color: var(--gold-soft);
+	}
+
+	.deity-line {
+		max-width: 300px;
+		font-size: 14px;
+		line-height: 1.9;
+		color: var(--text-muted);
+	}
+
+	.town {
+		padding: 88px 0;
+		background: #150e09;
+	}
+
+	.town .glyph,
+	.town .eyebrow:not(.faint) {
+		color: #e58a55;
+	}
+
+	.town .block-head {
+		border-bottom: 0;
+		margin-bottom: 24px;
+	}
+
+	.roster {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid rgba(229, 138, 85, 0.35);
+	}
+
+	.row,
+	.awaiting {
+		display: grid;
+		grid-template-columns: 88px minmax(0, 1fr);
+		gap: 24px;
+		align-items: center;
+		padding: 24px 0;
+		color: #f1e3d3;
+	}
+
+	.row {
+		border-bottom: 1px solid rgba(229, 138, 85, 0.35);
+	}
+
+	.lantern,
+	.ghost {
+		width: 88px;
+		height: 88px;
+		border-radius: 50%;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		font-family: var(--font-display);
+		font-size: 34px;
+	}
+
+	.lantern {
+		border: 1px solid #e58a55;
+		background: #22160f;
+		color: #f3c8a5;
+	}
+
+	.lantern :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.row-text {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.row-name {
+		font-family: var(--font-display);
+		font-size: 26px;
+	}
+
+	.row-role {
+		font-family: var(--font-body);
+		font-size: 14px;
+		color: #a9927e;
+	}
+
+	.row-line {
+		font-size: 14px;
+		color: #c9b6a3;
+	}
+
+	.awaiting {
+		padding: 32px;
+		border: 1px dashed rgba(201, 162, 74, 0.4);
+		color: var(--text-muted);
+	}
+
+	.ghost {
+		border: 1px dashed var(--text-faint);
+		color: var(--text-faint);
+	}
+</style>

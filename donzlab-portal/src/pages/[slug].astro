@@ -1,0 +1,88 @@
+---
+import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../layouts/Base.astro";
+import { resolveStarterSiteIdentity } from "../utils/site-identity";
+
+const slug = decodeSlug(Astro.params.slug);
+
+if (!slug) {
+	return Astro.rewrite("/404");
+}
+
+const { entry: page, cacheHint } = await getEmDashEntry("pages", slug);
+
+if (!page) {
+	return Astro.rewrite("/404");
+}
+
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
+
+const seo = getSeoMeta(page, {
+	siteTitle,
+	siteUrl: Astro.url.origin,
+	path: Astro.url.pathname.replace(/\/$/, ""),
+});
+const isBusiness = (page.data.layout ?? "business") === "business";
+---
+
+<Base
+	title={seo.title}
+	pageTitle={seo.ogTitle}
+	description={seo.description ?? page.data.lead}
+	canonical={seo.canonical}
+	content={{ collection: "pages", id: page.data.id, slug }}
+	mode={isBusiness ? "business" : "castle"}
+>
+	<header class:list={["page-head", { biz: isBusiness }]}>
+		<div class="container">
+			<h1 {...page.edit.title}>{page.data.title}</h1>
+			{page.data.lead && <p class="lead" {...page.edit.lead}>{page.data.lead}</p>}
+		</div>
+	</header>
+	<div class="container page-body">
+		<article class="prose">
+			<PortableText value={page.data.content} />
+		</article>
+	</div>
+</Base>
+
+<style>
+	.page-head {
+		padding: 56px 0 32px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.page-head.biz {
+		background: #f7f9fc;
+	}
+
+	.page-head h1 {
+		margin: 0 0 8px;
+		font-size: clamp(1.9rem, 5vw, 2.6rem);
+	}
+
+	.lead {
+		margin: 0;
+		max-width: 720px;
+		font-size: 1.1rem;
+		color: var(--text-muted);
+	}
+
+	.page-body {
+		padding-top: 40px;
+		padding-bottom: 80px;
+	}
+
+	.prose :global(h2) {
+		font-size: 1.3rem;
+		margin: 2em 0 0.6em;
+		padding-left: 12px;
+		border-left: 4px solid var(--accent);
+	}
+
+	.prose :global(h2:first-child) {
+		margin-top: 0;
+	}
+</style>

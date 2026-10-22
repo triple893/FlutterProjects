@@ -1,0 +1,44 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import LabCard from "../../components/LabCard.astro";
+import { bySortOrder, countNumeral } from "../../utils/format";
+
+const { entries, cacheHint } = await getEmDashCollection("labs", { limit: 100 });
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+const labs = [...entries].sort(bySortOrder);
+---
+
+<Base title="門" description="Don'z Lab の各ラボへの入口">
+	<div class="container page">
+		<div class="section-head">
+			<div>
+				<p class="eyebrow rise">The Gates</p>
+				<h1 class="rise rise-2">{countNumeral(labs.length)}つの門</h1>
+			</div>
+			<p class="note rise rise-3">門をくぐると、そのラボの世界に入ります。<br /><span class="en">Step through a gate to enter its world.</span></p>
+		</div>
+		<div class="grid">
+			{labs.map((lab, i) => <LabCard lab={lab} index={i} />)}
+		</div>
+	</div>
+</Base>
+
+<style>
+	.page {
+		padding-top: 72px;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: clamp(2.4rem, 6vw, 4rem);
+	}
+
+	.note {
+		margin: 0;
+		max-width: 420px;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-muted);
+	}
+</style>
